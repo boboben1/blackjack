@@ -60,6 +60,12 @@ public class Hand implements Serializable {
         }
     }
 
+    public boolean canDouble() {
+        synchronized (this.cards) {
+            return this.cards.size() == 2;
+        }
+    }
+
     public int value() {
         return value;
     }

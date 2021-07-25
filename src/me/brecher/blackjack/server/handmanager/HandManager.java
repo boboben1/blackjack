@@ -7,4 +7,5 @@ public interface HandManager {
 
     int handValue();
     boolean hasBlackjack();
+    boolean canDouble();
 }

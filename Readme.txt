@@ -14,3 +14,15 @@ This definitely needs more refactoring.
 
 
 Also, it supports saving high scores ;)
+
+
+Blackjack pays out 3:2 (like standard competition).
+
+Split is not yet implemented.
+
+Double is not yet implemented.
+
+Also, some nice quality of life features are implemented:
+When you press +X votes (larger than 1) after reset, it will go to that amount of votes.
+Ex: You press reset then +100. You will be betting 100 instead of 101.
+

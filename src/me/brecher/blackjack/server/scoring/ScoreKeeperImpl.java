@@ -50,7 +50,7 @@ public class ScoreKeeperImpl implements ScoreKeeper {
 
         Long new_money = event.getChange() + current_money;
 
-        if (new_money < minMoney) {
+        if (new_money < minMoney && event.isPayout()) {
             new_money = minMoney;
         }
 

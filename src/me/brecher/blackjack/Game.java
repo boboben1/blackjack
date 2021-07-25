@@ -23,8 +23,5 @@ public class Game {
         Client client = clientInjector.getInstance(ClientFactory.class).create(port);
 
         client.start();
-
-
-
     }
 }

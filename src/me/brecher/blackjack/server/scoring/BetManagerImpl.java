@@ -14,6 +14,8 @@ public class BetManagerImpl implements BetManager {
 
     boolean justReset;
 
+    boolean doubled;
+
     int bet;
 
     boolean canChangeBet;
@@ -25,6 +27,7 @@ public class BetManagerImpl implements BetManager {
         this.scoreKeeper = scoreKeeper;
 
         this.bet = minBet;
+        this.doubled = false;
 
         this.justReset = false;
         this.canChangeBet = true;
@@ -78,7 +81,7 @@ public class BetManagerImpl implements BetManager {
         this.eventBus.post(new BetUpdateEvent(bet));
     }
 
-                                            @Subscribe
+    @Subscribe
     public synchronized void roundReset(RoundResetEvent event) {
 
         this.eventBus.post(new BetUpdateEvent(bet));
@@ -108,11 +111,25 @@ public class BetManagerImpl implements BetManager {
                 pay += bet * 0.5;
         }
 
+        if (doubled)
+            pay *= 2;
+
+        doubled = false;
+
         if (bet > scoreKeeper.getLocalPlayerMoney() + pay)
-            bet = (int)scoreKeeper.getLocalPlayerMoney() + pay;
+            bet = Math.max((int)scoreKeeper.getLocalPlayerMoney() + pay, minBet);
 
-        this.eventBus.post(new MoneyChangedEvent(1, pay));
+        this.eventBus.post(new MoneyChangedEvent(1, pay, true));
 
+    }
+
+    @Subscribe
+    public synchronized void betDouble(BetDoubleEvent event) {
+        if (scoreKeeper.getLocalPlayerMoney() >= bet) {
+            this.eventBus.post(new MoneyChangedEvent(1, -bet, true));
+
+            this.doubled = true;
+        }
     }
 
     @Override
@@ -123,5 +140,16 @@ public class BetManagerImpl implements BetManager {
     @Override
     public int getMinBet() {
         return minBet;
+    }
+
+    @Override
+    public synchronized boolean canDouble() {
+        if (canChangeBet)
+            return false;
+
+        if (bet > scoreKeeper.getLocalPlayerMoney())
+            return false;
+
+        return true;
     }
 }

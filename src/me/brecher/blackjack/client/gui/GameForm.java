@@ -30,6 +30,7 @@ public class GameForm {
     private JButton betChangeMinus100;
     private JButton betChangePlus100;
     private JButton allIn;
+    private JButton doubleButton;
 
     private final AsyncEventBus eventBus;
 
@@ -57,6 +58,7 @@ public class GameForm {
             @Named("StandAction") AbstractAction standAction,
             @Named("BetResetAction") AbstractAction resetAction,
             @Named("BetAllInAction") AbstractAction allInAction,
+            @Named("DoubleAction") AbstractAction doubleAction,
             BetChangeFactory betChangeFactory) {
         this.button1.addActionListener(hitAction);
         this.button2.addActionListener(standAction);
@@ -72,6 +74,8 @@ public class GameForm {
         this.betChangePlus1.addActionListener(betChangeFactory.create(1));
         this.betChangePlus10.addActionListener(betChangeFactory.create(10));
         this.betChangePlus100.addActionListener(betChangeFactory.create(100));
+
+        this.doubleButton.addActionListener(doubleAction);
     }
 
     public void addToFrame(JFrame frame) {

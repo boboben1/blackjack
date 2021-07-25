@@ -39,7 +39,7 @@ public class HandManagerImpl implements HandManager {
 
 
 
-            if (this.activeHand().value() >= 21 && this.playerID == 1) {
+            if (this.activeHand().value() >= 21 && this.playerID == 1 || this.playerID == 1 && event.isForceFinish()) {
                 this.eventBus.post(new PlayerStandEvent());
             }
         }
@@ -60,4 +60,8 @@ public class HandManagerImpl implements HandManager {
         return playerHand;
     }
 
+    @Override
+    public boolean canDouble() {
+        return this.activeHand().canDouble();
+    }
 }

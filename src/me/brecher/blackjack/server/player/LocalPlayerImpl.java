@@ -6,24 +6,25 @@ import com.google.inject.Inject;
 import me.brecher.blackjack.Game;
 import me.brecher.blackjack.server.Server;
 import me.brecher.blackjack.server.deckmanager.DeckManager;
-import me.brecher.blackjack.shared.events.AddCardEvent;
-import me.brecher.blackjack.shared.events.PlayerHitEvent;
-import me.brecher.blackjack.shared.events.PlayerStandEvent;
+import me.brecher.blackjack.server.scoring.BetManager;
+import me.brecher.blackjack.shared.events.*;
 import me.brecher.blackjack.server.handmanager.HandManager;
 
 public class LocalPlayerImpl implements Player {
     final HandManager playerHand;
     final AsyncEventBus eventBus;
+    final BetManager betManager;
     @Inject
     DeckManager deckManager;
     boolean doingTurn;
 
 
     @Inject
-    public LocalPlayerImpl(AsyncEventBus eventBus, Server game) {
+    public LocalPlayerImpl(AsyncEventBus eventBus, Server game, BetManager betManager) {
         this.playerHand = game.getPlayerHandManager();
         this.doingTurn = false;
         this.eventBus = eventBus;
+        this.betManager = betManager;
         eventBus.register(this);
     }
 
@@ -35,6 +36,18 @@ public class LocalPlayerImpl implements Player {
     @Subscribe
     public void stand(PlayerStandEvent event) {
         finishTurn();
+    }
+
+    @Subscribe
+    public void doubleUp(PlayerDoubleEvent event) {
+
+        System.out.println(betManager.canDouble());
+        if (playerHand.canDouble() &&  betManager.canDouble())
+        {
+            this.eventBus.post(new BetDoubleEvent());
+            this.eventBus.post(new AddCardEvent(1, this.deckManager.draw(true), true));
+        }
+
     }
 
     @Override
