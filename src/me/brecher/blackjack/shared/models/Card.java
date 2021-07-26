@@ -43,6 +43,7 @@ public final class Card implements Serializable {
                 '}';
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(number, suit, faceUp);

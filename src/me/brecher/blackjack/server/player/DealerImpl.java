@@ -11,6 +11,8 @@ import me.brecher.blackjack.shared.models.Card;
 import me.brecher.blackjack.server.player.ai.Actions;
 import me.brecher.blackjack.server.player.ai.DealerAI;
 
+import java.util.List;
+
 public class DealerImpl implements Player {
 
 
@@ -95,5 +97,15 @@ public class DealerImpl implements Player {
     @Override
     public boolean hasBlackjack() {
         return dealerHand.hasBlackjack();
+    }
+
+    @Override
+    public void addCards(List<Card> cards) {
+        dealerHand.addCards(cards);
+
+        if (dealerHand.handValue() >= 21)
+        {
+            finishTurn();
+        }
     }
 }

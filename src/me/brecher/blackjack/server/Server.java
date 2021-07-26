@@ -26,8 +26,10 @@ public class Server {
     DeckManager deckManager;
     @Inject
     Gameplay gameplay;
+
+
     @Inject
-    AsyncEventBus eventBus;
+    private final AsyncEventBus eventBus;
 
     @Inject
     BetManager betManager;
@@ -44,9 +46,10 @@ public class Server {
     private ServerSocket serverSocket;
 
     @Inject
-    public Server(HandManagerFactory handManagerFactory) {
+    public Server(HandManagerFactory handManagerFactory, AsyncEventBus eventBus) {
         this.playerHandManager = handManagerFactory.create(1);
         this.dealerHandManager = handManagerFactory.create(0);
+        this.eventBus = eventBus;
     }
 
 

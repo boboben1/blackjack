@@ -45,7 +45,7 @@ public class ServerEventRouter {
     }
 
     @Subscribe
-    public void reset(RoundResetEvent event) {
+    public void resetEvent(RoundResetEvent event) {
         this.serverToClientEventQueue.sendToClient(event);
     }
 
@@ -56,6 +56,11 @@ public class ServerEventRouter {
 
     @Subscribe
     public void betUpdate(BetUpdateEvent event) {
+        this.serverToClientEventQueue.sendToClient(event);
+    }
+
+    @Subscribe
+    public void guiAddCards(GuiAddCardsEvent event) {
         this.serverToClientEventQueue.sendToClient(event);
     }
 }

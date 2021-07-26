@@ -5,19 +5,18 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import me.brecher.blackjack.shared.events.BetUpdateEvent;
+import me.brecher.blackjack.shared.events.GuiLoadEvent;
 import me.brecher.blackjack.shared.events.GuiUpdateMoneyEvent;
+import me.brecher.blackjack.shared.events.RoundEndEvent;
 
 import javax.swing.*;
-import java.awt.*;
 
 
 public class GameForm {
-    final HandViewFactory handViewFactory;
+
     private JPanel panel;
-    private JButton button1;
-    private JButton button2;
-    private JPanel actionPanel;
-    private JPanel playPanel;
+    private JButton hitButton;
+    private JButton standButton;
     private HandView handView1;
     private HandView handView2;
     private JLabel MoneyLabel;
@@ -31,15 +30,42 @@ public class GameForm {
     private JButton betChangePlus100;
     private JButton allIn;
     private JButton doubleButton;
+    private JLabel statusLabel;
+    private JPanel actionPanel;
 
     private final AsyncEventBus eventBus;
+    private final HandViewFactory handViewFactory;
+
+    private boolean loaded;
+    private boolean hasError;
+    private Timer timer;
 
     @Inject
     public GameForm(HandViewFactory handViewFactory, AsyncEventBus eventBus) {
         this.handViewFactory = handViewFactory;
         this.eventBus = eventBus;
+        this.loaded = false;
+
+        this.timer = new Timer(1000, e -> {
+            synchronized (this) {
+                this.statusLabel.setText(this.statusLabel.getText() + ".");
+                if (this.statusLabel.getText().length() > 13)
+                    this.statusLabel.setText("Loading.");
+            }
+        });
+
+        this.timer.start();
 
         eventBus.register(this);
+
+        setButtonsEnabled(false);
+    }
+
+
+    void setButtonsEnabled(boolean enabled) {
+        this.hitButton.setEnabled(enabled);
+        this.standButton.setEnabled(enabled);
+        this.doubleButton.setEnabled(enabled);
     }
 
     @Subscribe
@@ -52,6 +78,38 @@ public class GameForm {
         this.MoneyLabel.setText("" + event.getMoney());
     }
 
+    @Subscribe
+    public void roundEnd(RoundEndEvent event) {
+        switch (event.getResult()) {
+            case 0:
+                this.statusLabel.setText("DEALER WON!");
+                break;
+            case 1:
+                this.statusLabel.setText("YOU WON!");
+                break;
+            case 2:
+                this.statusLabel.setText("PUSH");
+                break;
+        }
+    }
+
+    @Subscribe
+    public void guiLoaded(GuiLoadEvent event) {
+        this.loaded = true;
+        this.hasError = event.hasError();
+
+        this.timer.stop();
+
+        if (hasError)
+            this.statusLabel.setText("An error occurred while loading assets.");
+        else
+        {
+            this.statusLabel.setText("Press any action to deal");
+            setButtonsEnabled(true);
+        }
+
+    }
+
     @Inject
     void injectListeners(
             @Named("HitAction") AbstractAction hitAction,
@@ -60,8 +118,8 @@ public class GameForm {
             @Named("BetAllInAction") AbstractAction allInAction,
             @Named("DoubleAction") AbstractAction doubleAction,
             BetChangeFactory betChangeFactory) {
-        this.button1.addActionListener(hitAction);
-        this.button2.addActionListener(standAction);
+        this.hitButton.addActionListener(hitAction);
+        this.standButton.addActionListener(standAction);
 
         this.resetButton.addActionListener(resetAction);
 
@@ -85,13 +143,10 @@ public class GameForm {
     private void createUIComponents() {
         // TODO: place custom component creation code here
 
-        this.actionPanel = new JPanel();
-        this.playPanel = new JPanel();
-        this.playPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, Color.LIGHT_GRAY));
-
-
         this.handView1 = handViewFactory.create(1);
         this.handView2 = handViewFactory.create(0);
 
+
     }
+
 }

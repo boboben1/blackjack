@@ -11,6 +11,8 @@ import me.brecher.blackjack.shared.events.*;
 import me.brecher.blackjack.server.handmanager.HandManager;
 import me.brecher.blackjack.shared.models.Card;
 
+import java.util.List;
+
 public class LocalPlayerImpl implements Player {
     final HandManager playerHand;
     final AsyncEventBus eventBus;
@@ -52,7 +54,8 @@ public class LocalPlayerImpl implements Player {
 
     @Override
     public synchronized void beginTurn() {
-        this.doingTurn = true;
+        if (!playerHand.hasBlackjack())
+            doingTurn = true;
     }
 
     @Override
@@ -86,7 +89,11 @@ public class LocalPlayerImpl implements Player {
         playerHand.addCard(card);
 
         if (playerHand.handValue() >= 21)
-            this.eventBus.post(new PlayerStandEvent());
+        {
+            //this.eventBus.post(new PlayerStandEvent());
+            finishTurn();
+        }
+
     }
 
     @Override
@@ -102,5 +109,15 @@ public class LocalPlayerImpl implements Player {
     @Override
     public boolean hasBlackjack() {
         return playerHand.hasBlackjack();
+    }
+
+    @Override
+    public void addCards(List<Card> cards) {
+        playerHand.addCards(cards);
+
+        if (playerHand.handValue() >= 21)
+        {
+            finishTurn();
+        }
     }
 }

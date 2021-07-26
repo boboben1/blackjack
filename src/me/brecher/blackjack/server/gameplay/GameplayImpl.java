@@ -11,10 +11,9 @@ import me.brecher.blackjack.shared.events.*;
 import me.brecher.blackjack.server.player.Player;
 import me.brecher.blackjack.shared.gameplay.Gameplay;
 
-public class GameplayImpl implements Gameplay {
+import java.util.Arrays;
 
-//    final HandManager playerHand;
-//    final HandManager dealerHand;
+public class GameplayImpl implements Gameplay {
     final Thread thread;
 
     @Inject
@@ -78,25 +77,46 @@ public class GameplayImpl implements Gameplay {
             dealer.resetHand();
 
 
-            dealer.addCard(this.deck.draw(true));
-            dealer.addCard(this.deck.draw(false));
+//            dealer.addCard(this.deck.draw(true));
+//            dealer.addCard(this.deck.draw(false));
+//
+//
+//
+//            player.addCard(this.deck.draw(true));
+//            player.addCard(this.deck.draw(true));
 
-            player.addCard(this.deck.draw(true));
-            player.addCard(this.deck.draw(true));
+
+            dealer.addCards(Arrays.asList(this.deck.draw(true), this.deck.draw(false)));
+            player.addCards(Arrays.asList(this.deck.draw(true), this.deck.draw(true)));
 
             this.player.beginTurn();
             this.player.waitForTurn();
 
             asyncEventBus.post(new RevealCardsEvent());
 
+            if (!this.player.hasBlackjack())
+            {
+                this.dealer.beginTurn();
+                this.dealer.waitForTurn();
+            }
 
-            this.dealer.beginTurn();
-            this.dealer.waitForTurn();
+
 
             int result = 0;
             boolean blackJack = this.player.hasBlackjack();
 
-            if (this.player.handValue() > 21) {
+            if (this.player.hasBlackjack())
+            {
+                if (this.dealer.hasBlackjack()) {
+                    result = 2;
+                }
+                else {
+                    result = 1;
+                }
+            } else if (this.dealer.hasBlackjack()) {
+                result = 0;
+            }
+            else if (this.player.handValue() > 21) {
                 if (this.dealer.handValue() > 21) {
                     result = 2;
                 } else {

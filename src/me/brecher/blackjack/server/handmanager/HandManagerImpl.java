@@ -8,6 +8,8 @@ import me.brecher.blackjack.shared.events.*;
 import me.brecher.blackjack.shared.models.Card;
 import me.brecher.blackjack.shared.models.Hand;
 
+import java.util.List;
+
 public class HandManagerImpl implements HandManager {
 
     private final AsyncEventBus eventBus;
@@ -76,5 +78,13 @@ public class HandManagerImpl implements HandManager {
         this.activeHand().addCard(card);
 
         this.eventBus.post(new GuiAddCardEvent(playerID, card, this.handValue()));
+    }
+
+    @Override
+    public void addCards(List<Card> cards) {
+        for (Card card : cards)
+            this.activeHand().addCard(card);
+
+        this.eventBus.post(new GuiAddCardsEvent(playerID, cards, this.handValue()));
     }
 }

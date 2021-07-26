@@ -41,7 +41,7 @@ public class Hand implements Serializable {
                 .sorted((l,r) -> r - l).collect(Collectors.toList());
 
         int bestHand = possibleValues.stream().filter(v -> v <= 21)
-                .findFirst().or(() -> possibleValues.stream().findFirst()).orElse(0);
+                .findFirst().or(() -> possibleValues.stream().sorted().findFirst()).orElse(0);
 
         this.value = bestHand;
     }

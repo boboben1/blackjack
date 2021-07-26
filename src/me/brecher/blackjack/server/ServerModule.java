@@ -2,6 +2,7 @@ package me.brecher.blackjack.server;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import me.brecher.blackjack.client.ServerToClientEventQueue;
@@ -14,7 +15,8 @@ import me.brecher.blackjack.client.gui.GuiModule;
 import me.brecher.blackjack.server.handmanager.HandManagerModule;
 import me.brecher.blackjack.server.player.PlayerModule;
 import me.brecher.blackjack.server.scoring.ScoringModule;
-import me.brecher.blackjack.shared.AsyncEventBusProvider;
+
+import java.util.concurrent.Executors;
 
 public class ServerModule extends AbstractModule {
     @Override
@@ -25,7 +27,6 @@ public class ServerModule extends AbstractModule {
 
         bind(DeckManager.class).to(DeckManagerImpl.class).in(Singleton.class);
 
-        bind(AsyncEventBus.class).toProvider(AsyncEventBusProvider.class);
         bind(ServerToClientEventQueue.class).in(Singleton.class);
         bind(ServerEventRouter.class).in(Singleton.class);
 
@@ -33,6 +34,13 @@ public class ServerModule extends AbstractModule {
         install(new HandManagerModule());
         install(new ScoringModule());
         install(new PlayerModule());
+    }
+
+
+    @Provides
+    @Singleton
+    AsyncEventBus getAsyncEventBus() {
+        return new AsyncEventBus(Executors.newCachedThreadPool());
     }
 
 }

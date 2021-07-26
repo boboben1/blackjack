@@ -71,9 +71,7 @@ public class Client extends Thread {
             while (true) {
                 if (clientToServerEventQueue.hasNext())
                 {
-                    System.out.println("SEND!");
                     oos.writeObject(clientToServerEventQueue.poll());
-
                 }
 
             }
