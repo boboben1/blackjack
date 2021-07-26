@@ -24,7 +24,7 @@ Also, it supports saving high scores ;)
 
 Blackjack pays out 3:2 (like standard competition).
 
-Split is not yet implemented.
+Split is not yet fully implemented. Bets don't work, and major refactors around this functionality are needed.
 
 Also, some nice quality of life features are implemented:
 When you press +X votes (larger than 1) after reset, it will go to that amount of votes.
