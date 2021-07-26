@@ -50,23 +50,24 @@ public class Hand implements Serializable {
     public synchronized void addCard(Card card) {
         synchronized (this.cards) {
             this.cards.add(card);
+            this.recalculate();
         }
-        this.recalculate();
+
     }
 
-    public boolean hasBlackjack() {
+    public synchronized boolean hasBlackjack() {
         synchronized (this.cards) {
             return (this.value() == 21 && this.cards.size() == 2);
         }
     }
 
-    public boolean canDouble() {
+    public synchronized boolean canDouble() {
         synchronized (this.cards) {
             return this.cards.size() == 2;
         }
     }
 
-    public int value() {
+    public synchronized int value() {
         return value;
     }
 

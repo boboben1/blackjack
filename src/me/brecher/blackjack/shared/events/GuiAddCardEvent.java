@@ -8,10 +8,12 @@ public class GuiAddCardEvent implements Serializable {
     private final String name = "GuiAddCardEvent";
     private final int playerID;
     private final Card card;
+    private final int handValue;
 
-    public GuiAddCardEvent(int playerID, Card card) {
+    public GuiAddCardEvent(int playerID, Card card, int handValue) {
         this.playerID = playerID;
         this.card = card;
+        this.handValue = handValue;
     }
 
     public int getPlayerID() {
@@ -20,6 +22,10 @@ public class GuiAddCardEvent implements Serializable {
 
     public Card getCard() {
         return card;
+    }
+
+    public int getHandValue() {
+        return handValue;
     }
 
     public String getName() {

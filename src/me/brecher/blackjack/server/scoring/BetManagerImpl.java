@@ -101,7 +101,7 @@ public class BetManagerImpl implements BetManager {
         int pay = 0;
 
         // PUSH
-        if (event.getResult() == 3)
+        if (event.getResult() == 2)
         {
             pay = bet;
         } //WIN

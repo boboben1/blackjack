@@ -1,5 +1,7 @@
 package me.brecher.blackjack.server.player;
 
+import me.brecher.blackjack.shared.models.Card;
+
 public interface Player {
     void beginTurn();
 
@@ -8,4 +10,12 @@ public interface Player {
     void finishTurn();
 
     boolean isTakingTurn();
+
+    void addCard(Card card);
+
+    int handValue();
+
+    void resetHand();
+
+    boolean hasBlackjack();
 }

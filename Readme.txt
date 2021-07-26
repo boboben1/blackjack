@@ -24,3 +24,14 @@ Also, some nice quality of life features are implemented:
 When you press +X votes (larger than 1) after reset, it will go to that amount of votes.
 Ex: You press reset then +100. You will be betting 100 instead of 101.
 
+
+To compile:
+
+Extract the entire jar.
+Run the commands exactly as shown:
+
+"javac me/brecher/blackjack/Game"
+
+To run from extracted jar:
+
+"java me.brecher.blackjack.Game"

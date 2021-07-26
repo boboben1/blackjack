@@ -9,6 +9,7 @@ import me.brecher.blackjack.server.deckmanager.DeckManager;
 import me.brecher.blackjack.server.scoring.BetManager;
 import me.brecher.blackjack.shared.events.*;
 import me.brecher.blackjack.server.handmanager.HandManager;
+import me.brecher.blackjack.shared.models.Card;
 
 public class LocalPlayerImpl implements Player {
     final HandManager playerHand;
@@ -30,7 +31,7 @@ public class LocalPlayerImpl implements Player {
 
     @Subscribe
     public void hit(PlayerHitEvent event) {
-        this.eventBus.post(new AddCardEvent(1, this.deckManager.draw(true)));
+        addCard(this.deckManager.draw(true));
     }
 
     @Subscribe
@@ -40,12 +41,11 @@ public class LocalPlayerImpl implements Player {
 
     @Subscribe
     public void doubleUp(PlayerDoubleEvent event) {
-
-        System.out.println(betManager.canDouble());
         if (playerHand.canDouble() &&  betManager.canDouble())
         {
             this.eventBus.post(new BetDoubleEvent());
-            this.eventBus.post(new AddCardEvent(1, this.deckManager.draw(true), true));
+
+            addCard(deckManager.draw(true));
         }
 
     }
@@ -79,5 +79,28 @@ public class LocalPlayerImpl implements Player {
     @Override
     public synchronized boolean isTakingTurn() {
         return this.doingTurn;
+    }
+
+    @Override
+    public void addCard(Card card) {
+        playerHand.addCard(card);
+
+        if (playerHand.handValue() >= 21)
+            this.eventBus.post(new PlayerStandEvent());
+    }
+
+    @Override
+    public int handValue() {
+        return playerHand.handValue();
+    }
+
+    @Override
+    public void resetHand() {
+        playerHand.reset();
+    }
+
+    @Override
+    public boolean hasBlackjack() {
+        return playerHand.hasBlackjack();
     }
 }

@@ -3,20 +3,18 @@ package me.brecher.blackjack.server.gameplay;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import me.brecher.blackjack.Game;
 import me.brecher.blackjack.annotations.Dealer;
 import me.brecher.blackjack.annotations.Human;
 import me.brecher.blackjack.server.Server;
 import me.brecher.blackjack.server.deckmanager.DeckManager;
 import me.brecher.blackjack.shared.events.*;
-import me.brecher.blackjack.server.handmanager.HandManager;
 import me.brecher.blackjack.server.player.Player;
 import me.brecher.blackjack.shared.gameplay.Gameplay;
 
 public class GameplayImpl implements Gameplay {
 
-    final HandManager playerHand;
-    final HandManager dealerHand;
+//    final HandManager playerHand;
+//    final HandManager dealerHand;
     final Thread thread;
 
     @Inject
@@ -24,11 +22,12 @@ public class GameplayImpl implements Gameplay {
 
     @Inject
     @Human
-    Player humanPlayer;
+    Player player;
 
     @Inject
     @Dealer
-    Player dealerPlayer;
+    Player dealer;
+
     boolean inRound;
     boolean beginNextRound;
 
@@ -37,9 +36,6 @@ public class GameplayImpl implements Gameplay {
 
     @Inject
     public GameplayImpl(AsyncEventBus asyncEventBus, Server game) {
-        this.playerHand = game.getPlayerHandManager();
-        this.dealerHand = game.getDealerHandManager();
-
         this.asyncEventBus = asyncEventBus;
 
 
@@ -78,38 +74,39 @@ public class GameplayImpl implements Gameplay {
 
             this.asyncEventBus.post(new RoundBeganEvent());
 
+            player.resetHand();
+            dealer.resetHand();
 
 
-            asyncEventBus.post(new AddCardEvent(0, this.deck.draw(true)));
-            asyncEventBus.post(new AddCardEvent(0, this.deck.draw(false)));
+            dealer.addCard(this.deck.draw(true));
+            dealer.addCard(this.deck.draw(false));
 
-            asyncEventBus.post(new AddCardEvent(1, this.deck.draw(true)));
-            asyncEventBus.post(new AddCardEvent(1, this.deck.draw(true)));
+            player.addCard(this.deck.draw(true));
+            player.addCard(this.deck.draw(true));
 
-
-            this.humanPlayer.beginTurn();
-            this.humanPlayer.waitForTurn();
+            this.player.beginTurn();
+            this.player.waitForTurn();
 
             asyncEventBus.post(new RevealCardsEvent());
 
 
-            this.dealerPlayer.beginTurn();
-            this.dealerPlayer.waitForTurn();
+            this.dealer.beginTurn();
+            this.dealer.waitForTurn();
 
             int result = 0;
-            boolean blackJack = this.playerHand.hasBlackjack();
+            boolean blackJack = this.player.hasBlackjack();
 
-            if (this.playerHand.handValue() > 21) {
-                if (this.dealerHand.handValue() > 21) {
+            if (this.player.handValue() > 21) {
+                if (this.dealer.handValue() > 21) {
                     result = 2;
                 } else {
                     result = 0;
                 }
-            } else if (this.dealerHand.handValue() > 21) {
+            } else if (this.dealer.handValue() > 21) {
                 result = 1;
-            } else if (this.playerHand.handValue() > this.dealerHand.handValue()) {
+            } else if (this.player.handValue() > this.dealer.handValue()) {
                 result = 1;
-            } else if (this.playerHand.handValue() < this.dealerHand.handValue()) {
+            } else if (this.player.handValue() < this.dealer.handValue()) {
                 result = 0;
             } else {
                 result = 2;

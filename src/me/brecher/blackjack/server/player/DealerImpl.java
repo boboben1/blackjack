@@ -43,13 +43,7 @@ public class DealerImpl implements Player {
                 }
 
                 else if (action == Actions.HIT) {
-                    Card drawed = this.deckManager.draw(true);
-
-                    this.dealerHand.activeHand().addCard(drawed);
-
-                    this.eventBus.post(new GuiAddCardEvent(0, drawed));
-
-
+                    addCard(this.deckManager.draw(true));
                 }
             }
 
@@ -81,5 +75,25 @@ public class DealerImpl implements Player {
     @Override
     public synchronized boolean isTakingTurn() {
         return doingTurn;
+    }
+
+    @Override
+    public void addCard(Card card) {
+        dealerHand.addCard(card);
+    }
+
+    @Override
+    public int handValue() {
+        return dealerHand.handValue();
+    }
+
+    @Override
+    public void resetHand() {
+        dealerHand.reset();
+    }
+
+    @Override
+    public boolean hasBlackjack() {
+        return dealerHand.hasBlackjack();
     }
 }
