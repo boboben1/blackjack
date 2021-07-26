@@ -19,12 +19,59 @@ import java.util.stream.Collectors;
 
 public class HandView extends JPanel {
 
+    // To do. Implement this in a provider.
+    class HandData
+    {
+        List<Card> cards;
+        List<Image> handImages;
+        int handValue;
+
+        HandData() {
+            this.cards = Collections.synchronizedList(new ArrayList<>());
+            this.handImages = Collections.synchronizedList(new ArrayList<>());
+            this.handValue = 0;
+        }
+    }
+
     final private CardResourceFinder cardResourceFinder;
-    private List<Card> cards;
-    private List<Image> handImages;
+
+    private final List<HandData> handDatas;
+    private int activeHandData;
+
+    private List<Card> cards() {
+        return this.handDatas.get(activeHandData).cards;
+    }
+
+    private void setCards(List<Card> cards) {
+        this.handDatas.get(activeHandData).cards = cards;
+    }
+
+    private List<Image> handImages() {
+        return this.handDatas.get(activeHandData).handImages;
+    }
+
+    private int handValue() {
+        return this.handDatas.get(activeHandData).handValue;
+    }
+
+    private void setHandValue(int value) {
+        this.handDatas.get(activeHandData).handValue = value;
+    }
+
+    private boolean didSplit;
+
+    private int otherHandValue() {
+        return this.handDatas.get(1-activeHandData).handValue;
+    }
+
+//    private List<Card> cards;
+//    private List<Image> handImages;
+
+
+
     private int playerNumber;
 
-    private int handValue;
+//    private int handValue;
     private boolean revealed;
 
     private Font handValueFont;
@@ -36,6 +83,10 @@ public class HandView extends JPanel {
     public HandView(@Assisted int playerNumber, CardResourceFinder cardResourceFinder, AsyncEventBus eventBus) {
         super();
 
+        this.activeHandData = 0;
+        this.handDatas = new ArrayList<>();
+        reset();
+
         eventBus.register(this);
 
         this.cardResourceFinder = cardResourceFinder;
@@ -43,7 +94,6 @@ public class HandView extends JPanel {
         this.playerNumber = playerNumber;
 
         this.revealed = true;
-        this.handValue = 0;
 
         this.loaded = false;
         this.hadError = false;
@@ -51,19 +101,17 @@ public class HandView extends JPanel {
         init();
     }
 
-
-
     @Subscribe
     public void addCard(GuiAddCardEvent event) {
         if (this.playerNumber == event.getPlayerID()) {
-            synchronized (this.cards) {
-                this.cards.add(event.getCard());
+            synchronized (this.handDatas) {
+                this.cards().add(event.getCard());
             }
 
             if (!event.getCard().faceUp())
                 revealed = false;
 
-            this.handValue = event.getHandValue();
+            this.setHandValue(event.getHandValue());
 
             updateHandImages();
         }
@@ -72,22 +120,20 @@ public class HandView extends JPanel {
     @Subscribe
     public void addCards(GuiAddCardsEvent event) {
         if (this.playerNumber == event.getPlayerID()) {
-            synchronized (this.cards) {
-                this.cards.addAll(event.getCards());
+            synchronized (this.handDatas) {
+                this.cards().addAll(event.getCards());
             }
 
             if (event.getCards().stream().anyMatch(e -> !e.faceUp()))
                 revealed = false;
 
-            this.handValue = event.getHandValue();
+            this.setHandValue(event.getHandValue());
 
             updateHandImages();
         }
     }
 
     private void init() {
-        this.handImages = Collections.synchronizedList(new ArrayList<>());
-        this.cards = Collections.synchronizedList(new ArrayList<>());
         this.handValueFont = createHandValueFont();
     }
 
@@ -103,9 +149,9 @@ public class HandView extends JPanel {
     }
 
     void updateHandImages() {
-        synchronized (cards) {
-            handImages.clear();
-            for (Card card : cards) {
+        synchronized (this.handDatas) {
+            this.handImages().clear();
+            for (Card card : cards()) {
                 this.addHandImage(cardResourceFinder.getCardImage(card));
             }
         }
@@ -115,8 +161,8 @@ public class HandView extends JPanel {
 
     @Subscribe
     public void revealHand(RevealCardsEvent event) {
-        synchronized (this.cards) {
-            this.cards = this.cards.stream().map(card -> card.makeFaceup(true)).collect(Collectors.toList());
+        synchronized (this.handDatas) {
+            this.setCards(this.cards().stream().map(card -> card.makeFaceup(true)).collect(Collectors.toList()));
         }
 
         this.revealed = true;
@@ -128,6 +174,48 @@ public class HandView extends JPanel {
         reset();
     }
 
+    @Subscribe
+    public void guiSplit(GuiSplitEvent event) {
+
+        synchronized (this.handDatas) {
+            if (playerNumber == event.getPlayerID()) {
+                reset();
+                handDatas.add(new HandData());
+
+                cards().add(event.getCard1());
+
+                this.setHandValue(event.getValue());
+
+                this.activeHandData = 1;
+
+                cards().add(event.getCard2());
+
+                setHandValue(event.getValue());
+
+                this.activeHandData = 0;
+
+
+                this.didSplit = true;
+
+                updateHandImages();
+            }
+        }
+
+
+
+    }
+
+    @Subscribe
+    public void guiSwitch(GuiSwitchEvent event) {
+        synchronized (this.handDatas) {
+            if (event.getPlayerID() == playerNumber) {
+                this.activeHandData = 1;
+                this.cards().add(event.getDrawn());
+                updateHandImages();
+            }
+        }
+    }
+
     public int getPlayerNumber() {
         return playerNumber;
     }
@@ -137,17 +225,24 @@ public class HandView extends JPanel {
     }
 
     public void addHandImage(Image handImage) {
-        synchronized (this.handImages) {
-            this.handImages.add(handImage);
+        synchronized (this.handDatas) {
+            this.handImages().add(handImage);
         }
 
         this.repaint();
     }
 
     public void reset() {
-        synchronized (this.handImages) {
-            this.handImages.clear();
-            this.cards.clear();
+//        synchronized (this.handImages) {
+//            this.handImages.clear();
+//            this.cards.clear();
+//        }
+
+        synchronized (this.handDatas) {
+            this.handDatas.clear();
+            this.handDatas.add(new HandData());
+            this.activeHandData = 0;
+            this.didSplit = false;
         }
 
         this.repaint();
@@ -165,15 +260,16 @@ public class HandView extends JPanel {
         int spacing = 10;
 
 
+        int maxX = this.getWidth();
 
         if (this.loaded && !this.hadError) {
-            synchronized (this.handImages) {
-                for (Image img : this.handImages) {
+            synchronized (this.handDatas) {
+                for (Image img : this.handImages()) {
                     // Don't hardcode this!
                     g.drawImage(Util.resizedImage(img, 120, 200), x, this.getHeight() + y, this);
                     x += 120 + spacing;
 
-                    if (x + 120 > this.getWidth())
+                    if (x + 120 > maxX)
                     {
                         x = 40;
                         y = -150;
@@ -182,12 +278,13 @@ public class HandView extends JPanel {
             }
 
 
-            if (revealed && handImages.size() > 0)
+            if (revealed && handImages().size() > 0)
             {
-
                 g.setColor(Color.BLACK);
-                g.drawString("" + handValue,10, getHeight() - 220);
+                g.drawString("" + handValue(),10, getHeight() - 220);
 
+                if (didSplit)
+                    g.drawString("" + otherHandValue(), 300, getHeight() - 220);
             }
         }
 

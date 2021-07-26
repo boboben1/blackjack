@@ -70,7 +70,7 @@ public class DealerImpl implements Player {
         if (doingTurn) {
             doingTurn = false;
 
-            notify();
+            notifyAll();
         }
     }
 

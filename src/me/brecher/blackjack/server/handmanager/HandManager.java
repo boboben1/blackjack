@@ -11,9 +11,14 @@ public interface HandManager {
     int handValue();
     boolean hasBlackjack();
     boolean canDouble();
+    boolean canSplit();
 
     void addCard(Card card);
     void addCards(List<Card> cards);
+
+    void split();
+
+    boolean next();
 
     void reset();
 }

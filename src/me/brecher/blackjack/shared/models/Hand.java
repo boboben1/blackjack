@@ -71,4 +71,14 @@ public class Hand implements Serializable {
         return value;
     }
 
+    public synchronized boolean canSplit() {
+        synchronized (this.cards) {
+            return this.cards.size() == 2 && this.cards.get(0).getValue()[0] == this.cards.get(1).getValue()[0];
+        }
+    }
+
+    public synchronized List<Card> split() {
+        return this.cards;
+    }
+
 }

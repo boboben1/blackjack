@@ -4,10 +4,7 @@ import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import me.brecher.blackjack.shared.events.BetUpdateEvent;
-import me.brecher.blackjack.shared.events.GuiLoadEvent;
-import me.brecher.blackjack.shared.events.GuiUpdateMoneyEvent;
-import me.brecher.blackjack.shared.events.RoundEndEvent;
+import me.brecher.blackjack.shared.events.*;
 
 import javax.swing.*;
 
@@ -32,6 +29,7 @@ public class GameForm {
     private JButton doubleButton;
     private JLabel statusLabel;
     private JPanel actionPanel;
+    private JButton splitButton;
 
     private final AsyncEventBus eventBus;
     private final HandViewFactory handViewFactory;
@@ -66,6 +64,7 @@ public class GameForm {
         this.hitButton.setEnabled(enabled);
         this.standButton.setEnabled(enabled);
         this.doubleButton.setEnabled(enabled);
+        this.splitButton.setEnabled(enabled);
     }
 
     @Subscribe
@@ -94,6 +93,11 @@ public class GameForm {
     }
 
     @Subscribe
+    public void roundBegun(RoundBeganEvent event) {
+        this.statusLabel.setText("");
+    }
+
+    @Subscribe
     public void guiLoaded(GuiLoadEvent event) {
         this.loaded = true;
         this.hasError = event.hasError();
@@ -117,6 +121,7 @@ public class GameForm {
             @Named("BetResetAction") AbstractAction resetAction,
             @Named("BetAllInAction") AbstractAction allInAction,
             @Named("DoubleAction") AbstractAction doubleAction,
+            @Named("SplitAction") AbstractAction splitAction,
             BetChangeFactory betChangeFactory) {
         this.hitButton.addActionListener(hitAction);
         this.standButton.addActionListener(standAction);
@@ -134,6 +139,7 @@ public class GameForm {
         this.betChangePlus100.addActionListener(betChangeFactory.create(100));
 
         this.doubleButton.addActionListener(doubleAction);
+        this.splitButton.addActionListener(splitAction);
     }
 
     public void addToFrame(JFrame frame) {

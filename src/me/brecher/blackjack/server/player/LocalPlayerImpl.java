@@ -14,13 +14,15 @@ import me.brecher.blackjack.shared.models.Card;
 import java.util.List;
 
 public class LocalPlayerImpl implements Player {
-    final HandManager playerHand;
-    final AsyncEventBus eventBus;
-    final BetManager betManager;
+    private final HandManager playerHand;
+    private final AsyncEventBus eventBus;
+    private final BetManager betManager;
     @Inject
-    DeckManager deckManager;
-    boolean doingTurn;
+    private DeckManager deckManager;
+    private boolean doingTurn;
 
+
+    private boolean didSplit;
 
     @Inject
     public LocalPlayerImpl(AsyncEventBus eventBus, Server game, BetManager betManager) {
@@ -28,6 +30,7 @@ public class LocalPlayerImpl implements Player {
         this.doingTurn = false;
         this.eventBus = eventBus;
         this.betManager = betManager;
+        this.didSplit = false;
         eventBus.register(this);
     }
 
@@ -52,6 +55,14 @@ public class LocalPlayerImpl implements Player {
 
     }
 
+    @Subscribe
+    public void split(PlayerSplitEvent event) {
+
+        if (playerHand.canSplit()) {
+            this.playerHand.split();
+        }
+    }
+
     @Override
     public synchronized void beginTurn() {
         if (!playerHand.hasBlackjack())
@@ -73,9 +84,22 @@ public class LocalPlayerImpl implements Player {
     @Override
     public synchronized void finishTurn() {
         if (doingTurn) {
-            this.doingTurn = false;
 
-            notify();
+            if (playerHand.next()) {
+                this.doingTurn = false;
+
+                notifyAll();
+            } else {
+
+                Card card = deckManager.draw(true);
+                playerHand.activeHand().addCard(card);
+
+                if (playerHand.handValue() >= 21)
+                    finishTurn();
+
+                this.eventBus.post(new GuiSwitchEvent(1, card));
+            }
+
         }
     }
 
@@ -90,7 +114,6 @@ public class LocalPlayerImpl implements Player {
 
         if (playerHand.handValue() >= 21)
         {
-            //this.eventBus.post(new PlayerStandEvent());
             finishTurn();
         }
 

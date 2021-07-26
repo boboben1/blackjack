@@ -63,4 +63,14 @@ public class ServerEventRouter {
     public void guiAddCards(GuiAddCardsEvent event) {
         this.serverToClientEventQueue.sendToClient(event);
     }
+
+    @Subscribe
+    public void guiSplit(GuiSplitEvent event) {
+        this.serverToClientEventQueue.sendToClient(event);
+    }
+
+    @Subscribe
+    public void guiSwitch(GuiSwitchEvent event) {
+        this.serverToClientEventQueue.sendToClient(event);
+    }
 }

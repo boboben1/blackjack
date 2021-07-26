@@ -17,6 +17,7 @@ public class GuiModule extends AbstractModule {
         bind(AbstractAction.class).annotatedWith(Names.named("BetResetAction")).to(BetResetAction.class);
         bind(AbstractAction.class).annotatedWith(Names.named("BetAllInAction")).to(BetAllInAction.class);
         bind(AbstractAction.class).annotatedWith(Names.named("DoubleAction")).to(DoubleAction.class);
+        bind(AbstractAction.class).annotatedWith(Names.named("SplitAction")).to(SplitAction.class);
 
         bind(GameForm.class).in(Singleton.class);
 

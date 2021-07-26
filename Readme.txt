@@ -1,3 +1,9 @@
+
+Ben Brecher
+COP3252 Project
+
+Blackjack game implementation.
+
 Card images from:
 https://acbl.mybigcommerce.com/52-playing-cards/
 
