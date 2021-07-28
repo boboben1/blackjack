@@ -30,17 +30,15 @@ public class ServerConnectionThread extends Thread {
         ) {
             eventBus.post(new BetResetEvent());
 
-            scheduledExecutorService.execute(() -> {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        Object obj = ois.readObject();
-                        //System.out.println(obj);
-                        this.eventBus.post(obj);
-                    } catch (IOException | ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                try {
+                    Object obj = ois.readObject();
+                    //System.out.println(obj);
+                    this.eventBus.post(obj);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
-            });
+            }, 0, 100, TimeUnit.MILLISECONDS);
 
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 while (serverToClientEventQueue.hasNext()) {

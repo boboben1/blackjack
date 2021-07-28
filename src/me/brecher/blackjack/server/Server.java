@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Server {
 
@@ -72,9 +73,7 @@ public class Server {
             return -1;
         }
 
-        scheduledExecutorService.execute(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
                 try {
                     Socket socket = this.serverSocket.accept();
 
@@ -84,9 +83,7 @@ public class Server {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-            }
-        });
+        }, 0, 10, TimeUnit.MILLISECONDS);
 
         return serverSocket.getLocalPort();
     }

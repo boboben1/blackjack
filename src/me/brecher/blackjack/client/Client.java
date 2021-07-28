@@ -35,30 +35,23 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-
         try (Socket socket = new Socket(InetAddress.getLoopbackAddress(), port);
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream()))
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream()))
         {
             startUI();
 
-            scheduledExecutorService.execute(() -> {
-                try (
-                        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream())
-                ) {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        try {
-                            Object obj = ois.readObject();
-                            this.asyncEventBus.post(obj);
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                try {
+                    Object obj = ois.readObject();
+                    this.asyncEventBus.post(obj);
 
-                            //System.out.println(obj);
-                        } catch (IOException | ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (IOException e) {
+                    //System.out.println(obj);
+                } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-            });
+            }, 0, 100, TimeUnit.MILLISECONDS);
+
 
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 while (clientToServerEventQueue.hasNext()) {
@@ -68,17 +61,17 @@ public class Client extends Thread {
                         e.printStackTrace();
                     }
                 }
-            }, 0, 100, TimeUnit.MILLISECONDS);
+            },0, 100, TimeUnit.MILLISECONDS);
 
             try {
-                while(!scheduledExecutorService.awaitTermination(5000, TimeUnit.MILLISECONDS)
-                    && !Thread.currentThread().isInterrupted()) {}
-            } catch (InterruptedException e) { }
+                while (!scheduledExecutorService.awaitTermination(5000, TimeUnit.MILLISECONDS)
+                        && !Thread.currentThread().isInterrupted()) {
+                }
+            } catch (InterruptedException e) {
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     void startUI() {
@@ -88,9 +81,5 @@ public class Client extends Thread {
         frame.pack();
         frame.setVisible(true);
     }
-
-
-
-
 
 }
