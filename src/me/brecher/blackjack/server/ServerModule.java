@@ -1,7 +1,7 @@
 package me.brecher.blackjack.server;
 
 import com.google.common.eventbus.AsyncEventBus;
-import com.google.inject.AbstractModule;
+import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
@@ -12,10 +12,9 @@ import me.brecher.blackjack.server.handmanager.HandManagerModule;
 import me.brecher.blackjack.server.player.PlayerModule;
 import me.brecher.blackjack.server.scoring.ScoringModule;
 
-import java.lang.ref.Cleaner;
 import java.util.concurrent.Executors;
 
-public class ServerModule extends AbstractModule {
+public class ServerModule extends PrivateModule {
     @Override
     protected void configure() {
         bind(Integer.class)
@@ -31,6 +30,10 @@ public class ServerModule extends AbstractModule {
         install(new HandManagerModule());
         install(new ScoringModule());
         install(new PlayerModule());
+
+        bind(Server.class);
+
+        expose(Server.class);
     }
 
 

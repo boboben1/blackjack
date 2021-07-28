@@ -3,11 +3,11 @@ package me.brecher.blackjack.shared.events;
 import java.io.Serializable;
 
 public class GuiUpdateMoneyEvent implements Serializable {
-    private String name = "GuiUpdateMoneyEvent";
-    private int playerID;
-    private long money;
-    private boolean showChange;
-    private long change;
+    private final String name = "GuiUpdateMoneyEvent";
+    private final int playerID;
+    private final long money;
+    private final boolean showChange;
+    private final long change;
 
     public GuiUpdateMoneyEvent(int playerID, long money, boolean showChange, long change) {
         this.playerID = playerID;

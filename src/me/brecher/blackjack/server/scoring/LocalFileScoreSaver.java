@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LocalFileScoreSaver<K, V> implements ScoreSaver<K, V> {
-    private String saveFile;
+    private final String saveFile;
 
     private final Class<? extends K> keyClass;
     private final Class<? extends V> valueClass;
@@ -37,8 +37,6 @@ public class LocalFileScoreSaver<K, V> implements ScoreSaver<K, V> {
             oos.writeObject(scores);
 
             oos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,37 +46,40 @@ public class LocalFileScoreSaver<K, V> implements ScoreSaver<K, V> {
 
         Map<K, V> output = new HashMap<>();
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile));)
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile)))
         {
-            Map scores =(Map)ois.readObject();
+            Object obj = ois.readObject();
+            if (!Map.class.isAssignableFrom(obj.getClass()))
+            {
+                throw new AssertionError("ScoreSaverImpl<" + keyClass.getSimpleName()
+                        + ", " + valueClass.getSimpleName() + ">::load ERROR: loaded object is not a Map." );
+            } else {
+                Map scores = Map.class.cast(obj);
 
-            for (Object key : scores.keySet()) {
-                if (key == null || keyClass.isAssignableFrom(key.getClass())) {
-                    Object value = scores.get(key);
-                    if (value == null || valueClass.isAssignableFrom(value.getClass())) {
-                        output.put(keyClass.cast(key), valueClass.cast(value));
+                for (Object key : scores.keySet()) {
+                    if (key == null || keyClass.isAssignableFrom(key.getClass())) {
+                        Object value = scores.get(key);
+                        if (value == null || valueClass.isAssignableFrom(value.getClass())) {
+                            output.put(keyClass.cast(key), valueClass.cast(value));
+                        } else {
+                            throw new AssertionError("ScoreSaverImpl<" + keyClass.getSimpleName()
+                                    + ", " + valueClass.getSimpleName() + ">::load ERROR: value " + value
+                                    + " is not a " + valueClass.getSimpleName() + ".");
+                        }
                     } else {
                         throw new AssertionError("ScoreSaverImpl<" + keyClass.getSimpleName()
-                                + ", " + valueClass.getSimpleName() + ">::load ERROR: value " + value
-                                + " is not a " + valueClass.getSimpleName() + ".");
+                                + ", " + valueClass.getSimpleName() + ">::load ERROR: key " + key
+                                + " is not a " + keyClass.getSimpleName() + ".");
                     }
-                } else {
-                    throw new AssertionError("ScoreSaverImpl<" + keyClass.getSimpleName()
-                            + ", " + valueClass.getSimpleName() + ">::load ERROR: key " + key
-                            + " is not a " + keyClass.getSimpleName() + ".");
                 }
             }
-        } catch (FileNotFoundException e) {
+        } catch (ClassNotFoundException | AssertionError e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (AssertionError e) {
-            e.printStackTrace();
-        } finally {
-            return output;
         }
+
+        return output;
     }
 
     protected boolean saveExists() {

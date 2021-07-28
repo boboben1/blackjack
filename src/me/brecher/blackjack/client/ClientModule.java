@@ -1,7 +1,7 @@
 package me.brecher.blackjack.client;
 
 import com.google.common.eventbus.AsyncEventBus;
-import com.google.inject.AbstractModule;
+import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -13,13 +13,10 @@ import me.brecher.blackjack.shared.gameplay.Gameplay;
 
 import java.util.concurrent.Executors;
 
-public class ClientModule extends AbstractModule {
+public class ClientModule extends PrivateModule {
     @Override
     protected void configure() {
         bind(CardResourceFinder.class).to(CardResourceFinderImpl.class).in(Singleton.class);
-        //bind(ClientEventBus.class);
-
-        //bind(AsyncEventBus.class).toInstance(new AsyncEventBus(Executors.newSingleThreadExecutor()));
 
         bind(ClientToServerEventQueue.class).in(Singleton.class);
 
@@ -27,8 +24,9 @@ public class ClientModule extends AbstractModule {
 
         install(new FactoryModuleBuilder().implement(Client.class, Client.class).build(ClientFactory.class));
         install(new GuiModule());
-    }
 
+        expose(ClientFactory.class);
+    }
 
     @Provides
     @Singleton

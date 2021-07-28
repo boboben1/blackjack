@@ -38,14 +38,14 @@ public class GamePanel extends JPanel {
         init();
     }
 
-    synchronized void setLoaded(boolean hasError) {
-        loaded = true;
+    void setLoaded(boolean hasError) {
+        synchronized (this) {
+            loaded = true;
 
-        this.timer.stop();
+            this.timer.stop();
 
-        this.hasError = hasError;
+            this.hasError = hasError;
 
-        synchronized (this.loadingText) {
             this.loadingText = "An error has occured while loading";
         }
 
@@ -56,7 +56,7 @@ public class GamePanel extends JPanel {
         this.loadingText = "Loading.";
 
         this.timer = new Timer(1000,  e -> {
-            synchronized (this.loadingText) {
+            synchronized (this) {
                 this.loadingText += ".";
                 if (this.loadingText.length() > 5)
                     this.loadingText = "Loading.";

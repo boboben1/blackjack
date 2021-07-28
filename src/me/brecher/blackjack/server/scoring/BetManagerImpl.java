@@ -8,17 +8,17 @@ import me.brecher.blackjack.shared.events.*;
 
 public class BetManagerImpl implements BetManager {
 
-    AsyncEventBus eventBus;
-    final int minBet;
-    final ScoreKeeper scoreKeeper;
+    private final AsyncEventBus eventBus;
+    private final int minBet;
+    private final ScoreKeeper scoreKeeper;
 
-    boolean justReset;
+    private boolean justReset;
 
-    boolean doubled;
+    private boolean doubled;
 
-    int bet;
+    private int bet;
 
-    boolean canChangeBet;
+    private boolean canChangeBet;
 
     @Inject
     public BetManagerImpl(AsyncEventBus eventBus, @Named("MinBet") int minBet, ScoreKeeper scoreKeeper) {
@@ -147,9 +147,6 @@ public class BetManagerImpl implements BetManager {
         if (canChangeBet)
             return false;
 
-        if (bet > scoreKeeper.getLocalPlayerMoney())
-            return false;
-
-        return true;
+        return bet <= scoreKeeper.getLocalPlayerMoney();
     }
 }

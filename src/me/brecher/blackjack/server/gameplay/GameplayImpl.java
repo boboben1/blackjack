@@ -12,6 +12,7 @@ import me.brecher.blackjack.server.player.Player;
 import me.brecher.blackjack.shared.gameplay.Gameplay;
 
 import java.util.Arrays;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class GameplayImpl implements Gameplay {
     final Thread thread;
@@ -30,17 +31,19 @@ public class GameplayImpl implements Gameplay {
     boolean inRound;
     boolean beginNextRound;
 
-    final AsyncEventBus asyncEventBus;
+    private final AsyncEventBus asyncEventBus;
+    private final ScheduledExecutorService scheduledExecutorService;
 
 
     @Inject
-    public GameplayImpl(AsyncEventBus asyncEventBus, Server game) {
+    public GameplayImpl(AsyncEventBus asyncEventBus, Server game, ScheduledExecutorService scheduledExecutorService) {
         this.asyncEventBus = asyncEventBus;
+        this.scheduledExecutorService = scheduledExecutorService;
 
 
         this.inRound = false;
         this.beginNextRound = false;
-        this.thread = new Thread(() -> this.run());
+        this.thread = new Thread(this::run);
 
         this.thread.start();
 
@@ -48,7 +51,7 @@ public class GameplayImpl implements Gameplay {
     }
 
     void run() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
 
             asyncEventBus.post(new RoundResetEvent());
 
@@ -76,16 +79,6 @@ public class GameplayImpl implements Gameplay {
             player.resetHand();
             dealer.resetHand();
 
-
-//            dealer.addCard(this.deck.draw(true));
-//            dealer.addCard(this.deck.draw(false));
-//
-//
-//
-//            player.addCard(this.deck.draw(true));
-//            player.addCard(this.deck.draw(true));
-
-
             dealer.addCards(Arrays.asList(this.deck.draw(true), this.deck.draw(false)));
             player.addCards(Arrays.asList(this.deck.draw(true), this.deck.draw(true)));
 
@@ -102,42 +95,43 @@ public class GameplayImpl implements Gameplay {
 
 
 
-            int result = 0;
+            int winner;
             boolean blackJack = this.player.hasBlackjack();
 
             if (this.player.hasBlackjack())
             {
                 if (this.dealer.hasBlackjack()) {
-                    result = 2;
+                    winner = 2;
                 }
                 else {
-                    result = 1;
+                    winner = 1;
                 }
             } else if (this.dealer.hasBlackjack()) {
-                result = 0;
+                winner = 0;
             }
             else if (this.player.handValue() > 21) {
                 if (this.dealer.handValue() > 21) {
-                    result = 2;
+                    winner = 2;
                 } else {
-                    result = 0;
+                    winner = 0;
                 }
             } else if (this.dealer.handValue() > 21) {
-                result = 1;
+                winner = 1;
             } else if (this.player.handValue() > this.dealer.handValue()) {
-                result = 1;
+                winner = 1;
             } else if (this.player.handValue() < this.dealer.handValue()) {
-                result = 0;
+                winner = 0;
             } else {
-                result = 2;
+                winner = 2;
             }
 
 
-            asyncEventBus.post(new RoundEndEvent(blackJack, result));
+            asyncEventBus.post(new RoundEndEvent(blackJack, winner));
 
             synchronized (this) {
                 inRound = false;
             }
+
         }
     }
 

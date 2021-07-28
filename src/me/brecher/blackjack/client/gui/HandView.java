@@ -10,7 +10,6 @@ import me.brecher.blackjack.shared.models.Card;
 import me.brecher.blackjack.util.Util;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.util.*;
@@ -20,10 +19,10 @@ import java.util.stream.Collectors;
 public class HandView extends JPanel {
 
     // To do. Implement this in a provider.
-    class HandData
+    static class HandData
     {
-        List<Card> cards;
-        List<Image> handImages;
+        final List<Card> cards;
+        final List<Image> handImages;
         int handValue;
 
         HandData() {
@@ -43,7 +42,11 @@ public class HandView extends JPanel {
     }
 
     private void setCards(List<Card> cards) {
-        this.handDatas.get(activeHandData).cards = cards;
+        cards().clear();
+
+        for (Card card : cards) {
+            cards().add(card);
+        }
     }
 
     private List<Image> handImages() {
@@ -64,14 +67,8 @@ public class HandView extends JPanel {
         return this.handDatas.get(1-activeHandData).handValue;
     }
 
-//    private List<Card> cards;
-//    private List<Image> handImages;
-
-
-
     private int playerNumber;
 
-//    private int handValue;
     private boolean revealed;
 
     private Font handValueFont;
@@ -233,11 +230,6 @@ public class HandView extends JPanel {
     }
 
     public void reset() {
-//        synchronized (this.handImages) {
-//            this.handImages.clear();
-//            this.cards.clear();
-//        }
-
         synchronized (this.handDatas) {
             this.handDatas.clear();
             this.handDatas.add(new HandData());

@@ -8,18 +8,11 @@ import me.brecher.blackjack.shared.events.GuiUpdateMoneyEvent;
 import me.brecher.blackjack.shared.events.MoneyChangedEvent;
 import me.brecher.blackjack.shared.events.RoundResetEvent;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-
 public class ScoreKeeperImpl implements ScoreKeeper {
 
-    AsyncEventBus asyncEventBus;
+    private final AsyncEventBus asyncEventBus;
     private final long minMoney;
 
-//
-//    Map<Integer, Long> playerValues;
-//
     private final ScoreSaver<Integer, Long> scoreSaver;
 
     @Inject
@@ -30,26 +23,13 @@ public class ScoreKeeperImpl implements ScoreKeeper {
         this.scoreSaver = scoreSaver;
 
         asyncEventBus.register(this);
-
-//
-//        if (scoreSaver.saveExists()) {
-//            this.playerValues = scoreSaver.load();
-//        }
-//
-//        if (this.playerValues == null) {
-//            this.playerValues = new HashMap<>();
-//            this.playerValues.put(0, Long.MAX_VALUE);
-//            this.playerValues.put(1, 1000L);
-//
-//            this.scoreSaver.save(this.playerValues);
-//        }
     }
 
     @Subscribe
     public void moneyChanged(MoneyChangedEvent event) {
         Long current_money = this.scoreSaver.getScoreForPlayer(event.getPlayerID());
 
-        Long new_money = event.getChange() + current_money;
+        long new_money = event.getChange() + current_money;
 
         if (new_money < minMoney && event.isPayout()) {
             new_money = minMoney;

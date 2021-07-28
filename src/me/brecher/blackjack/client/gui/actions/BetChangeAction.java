@@ -11,7 +11,7 @@ public class BetChangeAction extends AbstractAction {
     private final AsyncEventBus eventBus;
     private final ClientToServerEventQueue clientToServerEventQueue;
 
-    int betChangeAmount;
+    private final int betChangeAmount;
 
     public BetChangeAction(AsyncEventBus eventBus, ClientToServerEventQueue clientToServerEventQueue, int betChangeAmount) {
         this.eventBus = eventBus;

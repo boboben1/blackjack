@@ -8,22 +8,30 @@ import me.brecher.blackjack.client.ClientModule;
 import me.brecher.blackjack.server.Server;
 import me.brecher.blackjack.server.ServerModule;
 
-import java.lang.ref.Cleaner;
-
 public class Game {
 
     public static void main(String[] args) {
-        Injector serverInjector = Guice.createInjector(new ServerModule());
+        Injector injector = Guice.createInjector(new GameModule());
 
-        Server server = serverInjector.getInstance(Server.class);
-
+        Server server = injector.getInstance(Server.class);
 
         int port = server.start();
 
-        Injector clientInjector = Guice.createInjector(new ClientModule());
-
-        Client client = clientInjector.getInstance(ClientFactory.class).create(port);
+        Client client = injector.getInstance(ClientFactory.class).create(port);
 
         client.start();
+
+//        Injector serverInjector = Guice.createInjector(new ServerModule());
+//
+//        Server server = serverInjector.getInstance(Server.class);
+//
+//
+//        int port = server.start();
+//
+//        Injector clientInjector = Guice.createInjector(new ClientModule());
+//
+//        Client client = clientInjector.getInstance(ClientFactory.class).create(port);
+//
+//        client.start();
     }
 }

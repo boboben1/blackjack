@@ -6,7 +6,7 @@ import java.util.Queue;
 
 public class ServerToClientEventQueue {
 
-    private Queue<Serializable> eventQueue;
+    private final Queue<Serializable> eventQueue;
 
     public ServerToClientEventQueue() {
         this.eventQueue = new LinkedList<>();

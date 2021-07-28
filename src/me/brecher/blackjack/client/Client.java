@@ -9,76 +9,76 @@ import javax.swing.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Client extends Thread {
     private final int port;
     private final AsyncEventBus asyncEventBus;
     private final ClientToServerEventQueue clientToServerEventQueue;
     private final GameForm gameForm;
+    private final ScheduledExecutorService scheduledExecutorService;
 
-
-    private Socket socket;
-    private InputStream is;
-    private ObjectOutputStream oos;
 
 
     @Inject
-    public Client(AsyncEventBus asyncEventBus, ClientToServerEventQueue clientToServerEventQueue, GameForm gameForm, @Assisted int port) {
+    public Client(AsyncEventBus asyncEventBus, ClientToServerEventQueue clientToServerEventQueue, GameForm gameForm,
+                  ScheduledExecutorService scheduledExecutorService, @Assisted int port) {
         this.port = port;
         this.asyncEventBus = asyncEventBus;
         this.clientToServerEventQueue = clientToServerEventQueue;
         this.gameForm = gameForm;
+        this.scheduledExecutorService = scheduledExecutorService;
     }
 
 
     @Override
     public void run() {
 
-        try {
-            socket = new Socket(InetAddress.getLoopbackAddress(), port);
-
-
-            is = socket.getInputStream();
-
-
-            oos = new ObjectOutputStream(socket.getOutputStream());
-
+        try (Socket socket = new Socket(InetAddress.getLoopbackAddress(), port);
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream()))
+        {
             startUI();
 
+            scheduledExecutorService.execute(() -> {
+                try (
+                        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream())
+                ) {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        try {
+                            Object obj = ois.readObject();
+                            this.asyncEventBus.post(obj);
 
-            new Thread(() -> {
-
-                ObjectInputStream ois = null;
-                try {
-                    ois = new ObjectInputStream(socket.getInputStream());
+                            //System.out.println(obj);
+                        } catch (IOException | ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                while (true) {
-                    try {
-                        Object obj = ois.readObject();
-                        this.asyncEventBus.post(obj);
+            });
 
-                        System.out.println(obj);
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                while (clientToServerEventQueue.hasNext()) {
+                    try {
+                        oos.writeObject(clientToServerEventQueue.poll());
                     } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
                 }
-            }).start();
+            }, 0, 100, TimeUnit.MILLISECONDS);
 
-            while (true) {
-                if (clientToServerEventQueue.hasNext())
-                {
-                    oos.writeObject(clientToServerEventQueue.poll());
-                }
-
+            try {
+                while(!scheduledExecutorService.awaitTermination(5000, TimeUnit.MILLISECONDS));
+            } catch (InterruptedException e) {
             }
-
         } catch (IOException e) {
-            return;
+            e.printStackTrace();
         }
+
+
     }
 
     void startUI() {

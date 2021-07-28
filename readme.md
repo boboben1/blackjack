@@ -8,17 +8,17 @@ Blackjack game implementation.
 
 ## Features
 
-* Client and Server^1
+* [Client and Server](#client-and-server)
 * Saving
 * Multiple decks of cards
 * Blackjack payout of 3:2
 * Hit, Stand, Double
-* Split^1
+* Split<sup>1</sup>
 * [Quality of Life Features](#quality-of-life-features)
 * Preloading and caching
 * Full multithreading support
 
-^1 See [Incomplete Features](#incomplete-features)
+<sup>1</sup> See [Incomplete Features](#incomplete-features)
 
 ### Quality of Life Features
 

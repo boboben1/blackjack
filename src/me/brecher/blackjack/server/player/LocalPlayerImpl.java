@@ -21,7 +21,7 @@ public class LocalPlayerImpl implements Player {
     private boolean doingTurn;
 
 
-    private boolean didSplit;
+    private final boolean didSplit;
 
     @Inject
     public LocalPlayerImpl(AsyncEventBus eventBus, Server game, BetManager betManager) {

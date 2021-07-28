@@ -1,7 +1,6 @@
 package me.brecher.blackjack.server.handmanager;
 
 import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import me.brecher.blackjack.shared.events.*;

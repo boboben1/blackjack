@@ -36,7 +36,7 @@ public class GameForm {
 
     private boolean loaded;
     private boolean hasError;
-    private Timer timer;
+    private final Timer timer;
 
     @Inject
     public GameForm(HandViewFactory handViewFactory, AsyncEventBus eventBus) {

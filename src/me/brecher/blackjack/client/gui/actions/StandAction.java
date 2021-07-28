@@ -3,7 +3,6 @@ package me.brecher.blackjack.client.gui.actions;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.inject.Inject;
 import me.brecher.blackjack.client.ClientToServerEventQueue;
-import me.brecher.blackjack.shared.events.PlayerHitEvent;
 import me.brecher.blackjack.shared.events.PlayerStandEvent;
 import me.brecher.blackjack.shared.events.StartRoundEvent;
 import me.brecher.blackjack.shared.gameplay.Gameplay;
