@@ -8,6 +8,8 @@ import me.brecher.blackjack.client.ClientModule;
 import me.brecher.blackjack.server.Server;
 import me.brecher.blackjack.server.ServerModule;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 public class Game {
 
     public static void main(String[] args) {

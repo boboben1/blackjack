@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class CardResourceFinderImpl implements CardResourceFinder {
 
@@ -27,7 +28,7 @@ public class CardResourceFinderImpl implements CardResourceFinder {
     private final AsyncEventBus asyncEventBus;
 
     @Inject
-    public CardResourceFinderImpl(AsyncEventBus asyncEventBus) {
+    public CardResourceFinderImpl(AsyncEventBus asyncEventBus, ScheduledExecutorService scheduledExecutorService) {
 
         this.asyncEventBus = asyncEventBus;
 
@@ -37,7 +38,7 @@ public class CardResourceFinderImpl implements CardResourceFinder {
         this.errorOccurred = false;
 
 
-        new Thread(() -> {
+        scheduledExecutorService.execute(() -> {
             boolean hadError = false;
             try {
                 preloadResources();
@@ -47,7 +48,7 @@ public class CardResourceFinderImpl implements CardResourceFinder {
             } finally {
                 setLoaded(hadError);
             }
-        }).start();
+        });
 
     }
 

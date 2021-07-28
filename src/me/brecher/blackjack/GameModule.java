@@ -18,7 +18,6 @@ public class GameModule extends AbstractModule {
 
     @Provides @Singleton
     ScheduledExecutorService getExecutorService() {
-        //return Executors.newCachedThreadPool();
-        return Executors.newScheduledThreadPool(10);
+        return Executors.newScheduledThreadPool(32);
     }
 }
