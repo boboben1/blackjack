@@ -1,4 +1,4 @@
-package me.brecher.blackjack.client;
+package me.brecher.blackjack.server;
 
 import java.io.Serializable;
 import java.util.LinkedList;

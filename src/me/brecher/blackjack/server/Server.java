@@ -2,8 +2,7 @@ package me.brecher.blackjack.server;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.inject.Inject;
-import me.brecher.blackjack.client.ServerToClientEventQueue;
-import me.brecher.blackjack.client.gui.GameForm;
+import me.brecher.blackjack.server.ServerToClientEventQueue;
 import me.brecher.blackjack.server.deckmanager.DeckManager;
 import me.brecher.blackjack.server.handmanager.HandManager;
 import me.brecher.blackjack.server.handmanager.HandManagerFactory;

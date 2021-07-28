@@ -17,12 +17,13 @@ public class ScoreKeeperImpl implements ScoreKeeper {
     AsyncEventBus asyncEventBus;
     private final long minMoney;
 
-    Map<Integer, Long> playerValues;
-
-    ScoreSaver scoreSaver;
+//
+//    Map<Integer, Long> playerValues;
+//
+    private final ScoreSaver<Integer, Long> scoreSaver;
 
     @Inject
-    ScoreKeeperImpl(AsyncEventBus asyncEventBus, @Named("MinMoney") long minMoney, @Nullable ScoreSaver scoreSaver) {
+    ScoreKeeperImpl(AsyncEventBus asyncEventBus, @Named("MinMoney") long minMoney, ScoreSaver<Integer, Long> scoreSaver) {
         this.asyncEventBus = asyncEventBus;
         this.minMoney = minMoney;
 
@@ -30,23 +31,23 @@ public class ScoreKeeperImpl implements ScoreKeeper {
 
         asyncEventBus.register(this);
 
-
-        if (scoreSaver.saveExists()) {
-            this.playerValues = scoreSaver.load();
-        }
-
-        if (this.playerValues == null) {
-            this.playerValues = new HashMap<>();
-            this.playerValues.put(0, Long.MAX_VALUE);
-            this.playerValues.put(1, 1000L);
-
-            this.scoreSaver.save(this.playerValues);
-        }
+//
+//        if (scoreSaver.saveExists()) {
+//            this.playerValues = scoreSaver.load();
+//        }
+//
+//        if (this.playerValues == null) {
+//            this.playerValues = new HashMap<>();
+//            this.playerValues.put(0, Long.MAX_VALUE);
+//            this.playerValues.put(1, 1000L);
+//
+//            this.scoreSaver.save(this.playerValues);
+//        }
     }
 
     @Subscribe
     public void moneyChanged(MoneyChangedEvent event) {
-        Long current_money = this.playerValues.get(event.getPlayerID());
+        Long current_money = this.scoreSaver.getScoreForPlayer(event.getPlayerID());
 
         Long new_money = event.getChange() + current_money;
 
@@ -54,20 +55,18 @@ public class ScoreKeeperImpl implements ScoreKeeper {
             new_money = minMoney;
         }
 
-        this.playerValues.put(event.getPlayerID(), new_money);
+        this.scoreSaver.putScoreForPlayer(event.getPlayerID(), new_money);
 
         this.asyncEventBus.post(new GuiUpdateMoneyEvent(event.getPlayerID(), new_money, true, event.getChange()));
-
-        this.scoreSaver.save(this.playerValues);
     }
 
     @Subscribe
     public void roundReset(RoundResetEvent event) {
-        this.asyncEventBus.post(new GuiUpdateMoneyEvent(1, this.playerValues.get(1)));
+        this.asyncEventBus.post(new GuiUpdateMoneyEvent(1, this.scoreSaver.getScoreForPlayer(1)));
     }
 
     @Override
     public long getLocalPlayerMoney() {
-        return this.playerValues.get(1);
+        return scoreSaver.getScoreForPlayer(1);
     }
 }

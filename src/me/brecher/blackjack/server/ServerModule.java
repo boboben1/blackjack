@@ -5,17 +5,14 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
-import me.brecher.blackjack.client.ServerToClientEventQueue;
-import me.brecher.blackjack.client.cardresourcefinder.CardResourceFinder;
-import me.brecher.blackjack.client.cardresourcefinder.CardResourceFinderImpl;
 import me.brecher.blackjack.server.deckmanager.DeckManager;
 import me.brecher.blackjack.server.deckmanager.DeckManagerImpl;
 import me.brecher.blackjack.server.gameplay.GameplayModule;
-import me.brecher.blackjack.client.gui.GuiModule;
 import me.brecher.blackjack.server.handmanager.HandManagerModule;
 import me.brecher.blackjack.server.player.PlayerModule;
 import me.brecher.blackjack.server.scoring.ScoringModule;
 
+import java.lang.ref.Cleaner;
 import java.util.concurrent.Executors;
 
 public class ServerModule extends AbstractModule {

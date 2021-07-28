@@ -1,9 +1,10 @@
 package me.brecher.blackjack.server.scoring;
 
+import java.io.Closeable;
+import java.lang.ref.Cleaner;
 import java.util.Map;
 
-public interface ScoreSaver {
-    void save(Map<Integer,Long> scoreMap);
-    Map<Integer, Long> load();
-    boolean saveExists();
+public interface ScoreSaver<K,V> {
+    public V getScoreForPlayer(K player);
+    public void putScoreForPlayer(K player, V score);
 }

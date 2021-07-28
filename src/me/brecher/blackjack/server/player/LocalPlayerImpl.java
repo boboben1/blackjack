@@ -3,7 +3,6 @@ package me.brecher.blackjack.server.player;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import me.brecher.blackjack.Game;
 import me.brecher.blackjack.server.Server;
 import me.brecher.blackjack.server.deckmanager.DeckManager;
 import me.brecher.blackjack.server.scoring.BetManager;
