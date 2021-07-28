@@ -53,9 +53,9 @@ public class ServerConnectionThread extends Thread {
             }, 0, 100, TimeUnit.MILLISECONDS);
 
             try {
-                while(!scheduledExecutorService.awaitTermination(5000, TimeUnit.MILLISECONDS));
-            } catch (InterruptedException ignored) {
-            }
+                while(!scheduledExecutorService.awaitTermination(5000, TimeUnit.MILLISECONDS)
+                        && !Thread.currentThread().isInterrupted()) {}
+            } catch (InterruptedException ignored) { }
         } catch (IOException e) {
             e.printStackTrace();
         }
