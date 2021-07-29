@@ -63,13 +63,12 @@ text animation for adding to your total balance, but I had no time to implement 
 
 #### Compiling and running from extracted jar file
 
-
 Extract the entire jar.
 Run the commands exactly as shown:
 
 ```shell
 # Compiling
-javac me/brecher/blackjack/Game
+javac me/brecher/blackjack/Game.java
 # Running
 java me.brecher.blackjack.Game
 ```
@@ -82,9 +81,9 @@ git clone https://github.com/boboben1/blackjack.git
 cd blackjack/src
 
 # Windows:
-javac -cp ".;../lib/*" me/brecher/blackjack/Game
+javac -cp ".;../lib/*" me/brecher/blackjack/Game.java
 # Linux:
-javac -cp ".:../lib/*" me/brecher/blackjack/Game
+javac -cp ".:../lib/*" me/brecher/blackjack/Game.java
 ```
 
 #### Running
