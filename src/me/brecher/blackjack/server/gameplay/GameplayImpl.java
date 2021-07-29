@@ -56,27 +56,30 @@ public class GameplayImpl implements Gameplay {
         asyncEventBus.register(this);
     }
 
+    private synchronized void waitForNextRound() {
+        while (!beginNextRound) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Gameplay thread. Interrupt while waiting for next round");
+            }
+        }
+
+        beginNextRound = false;
+    }
+
     void run() {
         while (!Thread.currentThread().isInterrupted()) {
 
 
             asyncEventBus.post(new RoundNewRoundEvent());
 
-            synchronized (this) {
-                while (!beginNextRound) {
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        System.err.println("Gameplay thread. Interrupt while waiting for next round");
-                    }
-                }
-            }
 
+            waitForNextRound();
 
             synchronized (this) {
                 inRound = true;
-                beginNextRound = false;
             }
 
             this.deck.reset();
@@ -148,7 +151,7 @@ public class GameplayImpl implements Gameplay {
     public synchronized void startRound(StartRoundEvent event) {
         if (!inRound) {
             beginNextRound = true;
-            notify();
+            notifyAll();
         }
     }
 

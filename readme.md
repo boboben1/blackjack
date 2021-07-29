@@ -17,6 +17,7 @@ Blackjack game implementation.
 * [Quality of Life Features](#quality-of-life-features)
 * Preloading and caching
 * Full multithreading support
+* Server and Client Sync
 
 <sup>1</sup> See [Incomplete Features](#incomplete-features)
 
@@ -43,6 +44,8 @@ into different types.
 
 It starts its own listen server and connects to it. This is done to enforce separation of concerns between GUI and Server,
 and makes it simple to expand and add multiplayer support in the future.
+
+Client and Server will sync before the round to make sure there are no race conditions.
 
 #### Adding multiplayer
 

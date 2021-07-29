@@ -97,7 +97,7 @@ public class GameForm {
 
     @Subscribe
     public void roundBegun(RoundBeganEvent event) {
-        this.statusLabel.setText("");
+        this.statusLabel.setText(" ");
         this.handView1.reset();
         this.handView2.reset();
 
