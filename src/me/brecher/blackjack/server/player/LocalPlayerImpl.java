@@ -9,6 +9,7 @@ import me.brecher.blackjack.server.scoring.BetManager;
 import me.brecher.blackjack.shared.events.*;
 import me.brecher.blackjack.server.handmanager.HandManager;
 import me.brecher.blackjack.shared.models.Card;
+import me.brecher.blackjack.shared.models.Hand;
 
 import java.util.List;
 
@@ -47,7 +48,8 @@ public class LocalPlayerImpl implements Player {
     public void doubleUp(PlayerDoubleEvent event) {
         if (playerHand.canDouble() &&  betManager.canDouble())
         {
-            this.eventBus.post(new BetDoubleEvent());
+
+            betManager.doubleDown();
 
             playerHand.addCard(deckManager.draw(true));
 
@@ -58,8 +60,8 @@ public class LocalPlayerImpl implements Player {
 
     @Subscribe
     public void split(PlayerSplitEvent event) {
-
-        if (playerHand.canSplit()) {
+        if (playerHand.canSplit() && betManager.canSplit()) {
+            betManager.split();
             this.playerHand.split();
         }
     }
@@ -119,10 +121,10 @@ public class LocalPlayerImpl implements Player {
 
     }
 
-    @Override
-    public int handValue() {
-        return playerHand.handValue();
-    }
+//    @Override
+//    public int handValue() {
+//        return playerHand.handValue();
+//    }
 
     @Override
     public void resetHand() {
@@ -142,5 +144,15 @@ public class LocalPlayerImpl implements Player {
         {
             finishTurn();
         }
+    }
+
+    @Override
+    public List<Hand> getHands() {
+        return playerHand.getHands();
+    }
+
+    @Override
+    public Hand getActiveHand() {
+        return playerHand.activeHand();
     }
 }

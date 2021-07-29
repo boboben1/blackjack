@@ -13,13 +13,12 @@ Blackjack game implementation.
 * Multiple decks of cards
 * Blackjack payout of 3:2
 * Hit, Stand, Double
-* Split<sup>1</sup>
+* Split
 * [Quality of Life Features](#quality-of-life-features)
 * Preloading and caching
 * Full multithreading support
 * Server and Client Sync
 
-<sup>1</sup> See [Incomplete Features](#incomplete-features)
 
 ### Quality of Life Features
 
@@ -54,10 +53,6 @@ expand upon it and add the functionality.
 
 
 ## Incomplete Features
-
-### Split
-Split is not yet fully implemented. Bets don't work, and major refactors around this functionality are needed. Right now,
-it's a tad hacky.
 
 ### Animations for money earned/lost
 Support for displaying change in money earned and lost exists, and ideally would be implemented with a flashy floating 

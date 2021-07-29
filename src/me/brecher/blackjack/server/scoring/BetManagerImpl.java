@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import me.brecher.blackjack.shared.events.*;
+import me.brecher.blackjack.shared.models.RoundResult;
 
 public class BetManagerImpl implements BetManager {
 
@@ -99,16 +100,19 @@ public class BetManagerImpl implements BetManager {
     @Subscribe
     public synchronized void roundEnded(RoundEndEvent event) {
         int pay = 0;
+        for (RoundResult roundResult : event.getRoundResults()) {
+            int roundPay = 0;
+            if (roundResult.getWinner() == 2) {
+                roundPay = bet;
+            } else if (roundResult.getWinner() == 1) {
+                roundPay = 2 * bet;
 
-        // PUSH
-        if (event.getResult() == 2)
-        {
-            pay = bet;
-        } //WIN
-        else if (event.getResult() == 1) {
-            pay = 2 * bet;
-            if (event.isBlackJack())
-                pay += bet * 0.5;
+                if (roundResult.isWithBlackjack()) {
+                    roundPay += bet * 0.5f;
+                }
+            }
+
+            pay += roundPay;
         }
 
         if (doubled)
@@ -123,8 +127,8 @@ public class BetManagerImpl implements BetManager {
 
     }
 
-    @Subscribe
-    public synchronized void betDouble(BetDoubleEvent event) {
+    @Override
+    public synchronized void doubleDown() {
         if (scoreKeeper.getLocalPlayerMoney() >= bet) {
             this.eventBus.post(new MoneyChangedEvent(1, -bet, true));
 
@@ -144,6 +148,19 @@ public class BetManagerImpl implements BetManager {
 
     @Override
     public synchronized boolean canDouble() {
+        if (canChangeBet)
+            return false;
+
+        return bet <= scoreKeeper.getLocalPlayerMoney();
+    }
+
+    @Override
+    public void split() {
+        this.eventBus.post(new MoneyChangedEvent(1, -bet, true));
+    }
+
+    @Override
+    public boolean canSplit() {
         if (canChangeBet)
             return false;
 

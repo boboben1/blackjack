@@ -6,8 +6,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import me.brecher.blackjack.client.ClientToServerEventQueue;
 import me.brecher.blackjack.shared.events.*;
+import me.brecher.blackjack.shared.models.RoundResult;
 
 import javax.swing.*;
+import java.util.List;
 
 
 public class GameForm {
@@ -82,17 +84,35 @@ public class GameForm {
 
     @Subscribe
     public void roundEnd(RoundEndEvent event) {
-        switch (event.getResult()) {
-            case 0:
-                this.statusLabel.setText("DEALER WON!");
-                break;
-            case 1:
-                this.statusLabel.setText("YOU WON!");
-                break;
-            case 2:
-                this.statusLabel.setText("PUSH");
-                break;
+
+        List<RoundResult> roundResults = event.getRoundResults();
+
+        StringBuilder text = new StringBuilder();
+
+        boolean multipleHands = roundResults.size() > 1;
+
+        for (int i = 0; i < roundResults.size(); ++i) {
+            if (multipleHands) {
+                if (i > 0) {
+                    text.append(" | ");
+                }
+                text.append("Hand ").append(i).append(" ");
+            }
+
+            switch(roundResults.get(i).getWinner()) {
+                case 0:
+                    text.append("DEALER WON!");
+                    break;
+                case 1:
+                    text.append("YOU WON!");
+                    break;
+                case 2:
+                    text.append("PUSH");
+                    break;
+            }
         }
+
+        this.statusLabel.setText(text.toString());
     }
 
     @Subscribe

@@ -8,47 +8,72 @@ import me.brecher.blackjack.server.handmanager.HandManager;
 import me.brecher.blackjack.shared.models.Card;
 import me.brecher.blackjack.server.player.ai.Actions;
 import me.brecher.blackjack.server.player.ai.DealerAI;
+import me.brecher.blackjack.shared.models.Hand;
 
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class DealerImpl implements Player {
 
 
-    final HandManager dealerHand;
-    final DeckManager deckManager;
-    final AsyncEventBus eventBus;
+    private final HandManager dealerHand;
+    private final DeckManager deckManager;
+    private final AsyncEventBus eventBus;
+    private final ScheduledExecutorService scheduledExecutorService;
 
     private boolean doingTurn;
 
     private final DealerAI ai;
 
+    private ScheduledFuture scheduledFuture;
+
+
     @Inject
-    DealerImpl(DealerAI ai, Server game, DeckManager deckManager, AsyncEventBus eventBus) {
+    DealerImpl(DealerAI ai, Server game, DeckManager deckManager, AsyncEventBus eventBus, ScheduledExecutorService scheduledExecutorService) {
         this.ai = ai;
+        this.doingTurn = false;
         this.dealerHand = game.getDealerHandManager();
         this.deckManager = deckManager;
         this.eventBus = eventBus;
+        this.scheduledExecutorService = scheduledExecutorService;
+
+        this.scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(this::doTurn, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public synchronized void beginTurn() {
         doingTurn = true;
 
-        new Thread(() -> {
-            while (true) {
-                Actions action = this.ai.takeAction(dealerHand.handValue());
+//        new Thread(() -> {
+//            while (true) {
+//                Actions action = this.ai.takeAction(dealerHand.handValue());
+//
+//                if (action == Actions.STAND) {
+//                    break;
+//                }
+//
+//                else if (action == Actions.HIT) {
+//                    addCard(this.deckManager.draw(true));
+//                }
+//            }
+//
+//            finishTurn();
+//        }).start();
+    }
 
-                if (action == Actions.STAND) {
-                    break;
-                }
+    private synchronized void doTurn() {
+        if (doingTurn) {
+            Actions action = this.ai.takeAction(dealerHand.handValue());
 
-                else if (action == Actions.HIT) {
-                    addCard(this.deckManager.draw(true));
-                }
+            if (action == Actions.STAND) {
+                finishTurn();
             }
-
-            finishTurn();
-        }).start();
+            else if (action == Actions.HIT) {
+                addCard(this.deckManager.draw(true));
+            }
+        }
     }
 
     @Override
@@ -82,10 +107,10 @@ public class DealerImpl implements Player {
         dealerHand.addCard(card);
     }
 
-    @Override
-    public int handValue() {
-        return dealerHand.handValue();
-    }
+//    @Override
+//    public int handValue() {
+//        return dealerHand.handValue();
+//    }
 
     @Override
     public void resetHand() {
@@ -105,5 +130,15 @@ public class DealerImpl implements Player {
         {
             finishTurn();
         }
+    }
+
+    @Override
+    public List<Hand> getHands() {
+        return dealerHand.getHands();
+    }
+
+    @Override
+    public Hand getActiveHand() {
+        return dealerHand.activeHand();
     }
 }

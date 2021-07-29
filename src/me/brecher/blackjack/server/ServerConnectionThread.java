@@ -28,7 +28,7 @@ public class ServerConnectionThread extends Thread {
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream())
         ) {
-            eventBus.post(new BetResetEvent());
+
 
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 try {

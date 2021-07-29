@@ -8,6 +8,7 @@ import me.brecher.blackjack.shared.models.Card;
 import me.brecher.blackjack.shared.models.Hand;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HandManagerImpl implements HandManager {
@@ -40,7 +41,7 @@ public class HandManagerImpl implements HandManager {
 
     @Override
     public boolean hasBlackjack() {
-        return activeHand().hasBlackjack();
+        return activeHand().hasBlackjack() && !didSplit;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class HandManagerImpl implements HandManager {
 
     @Override
     public boolean canDouble() {
-        return this.activeHand().canDouble();
+        return this.activeHand().canDouble() && !didSplit;
     }
 
     @Override
@@ -112,5 +113,10 @@ public class HandManagerImpl implements HandManager {
 
 
         return true;
+    }
+
+    @Override
+    public List<Hand> getHands() {
+        return didSplit ? hands : Arrays.asList(activeHand());
     }
 }

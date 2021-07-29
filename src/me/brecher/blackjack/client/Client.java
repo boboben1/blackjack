@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import me.brecher.blackjack.client.gui.GameForm;
+import me.brecher.blackjack.shared.events.ClientAckEvent;
 
 import javax.swing.*;
 import java.io.*;
@@ -42,12 +43,14 @@ public class Client extends Thread {
         {
             startUI();
 
+            clientToServerEventQueue.sendToServer(new ClientAckEvent());
+
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 try {
                     Object obj = ois.readObject();
                     this.asyncEventBus.post(obj);
 
-                    //System.out.println(obj);
+                    System.out.println(obj);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

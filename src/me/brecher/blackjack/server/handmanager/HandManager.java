@@ -21,4 +21,6 @@ public interface HandManager {
     boolean next();
 
     void reset();
+
+    List<Hand> getHands();
 }

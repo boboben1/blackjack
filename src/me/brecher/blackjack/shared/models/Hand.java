@@ -83,4 +83,36 @@ public class Hand implements Serializable {
         return this.cards;
     }
 
+    public static RoundResult checkWinner(Hand left, Hand right) {
+        int winner;
+
+        if (left.hasBlackjack())
+        {
+            if (right.hasBlackjack()) {
+                winner = 2;
+            }
+            else {
+                winner = 0;
+            }
+        } else if (right.hasBlackjack()) {
+            winner = 1;
+        } else if (left.value() > 21) {
+            if (right.value() > 21) {
+                winner = 2;
+            } else {
+                winner = 1;
+            }
+        } else if (right.value() > 21) {
+            winner = 0;
+        } else if (left.value() > right.value()) {
+            winner = 0;
+        } else if (left.value() < right.value()) {
+            winner = 1;
+        } else {
+            winner = 2;
+        }
+
+        return new RoundResult(winner, left.hasBlackjack() || right.hasBlackjack());
+    }
+
 }

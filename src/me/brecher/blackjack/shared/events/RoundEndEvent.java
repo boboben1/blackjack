@@ -1,24 +1,21 @@
 package me.brecher.blackjack.shared.events;
 
+import me.brecher.blackjack.shared.models.RoundResult;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class RoundEndEvent implements Serializable {
     private final String name = "RoundEndEvent";
-    private final boolean blackJack;
-    private final int result;
+    private final List<RoundResult> roundResults;
 
-    public RoundEndEvent(boolean blackJack, int result)
+    public RoundEndEvent(List<RoundResult> roundResults)
     {
-        this.blackJack = blackJack;
-        this.result = result;
+        this.roundResults = roundResults;
     }
 
-    public boolean isBlackJack() {
-        return blackJack;
-    }
-
-    public int getResult() {
-        return result;
+    public List<RoundResult> getRoundResults() {
+        return roundResults;
     }
 
     public String getName() {
