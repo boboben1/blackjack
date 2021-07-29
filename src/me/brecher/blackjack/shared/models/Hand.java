@@ -75,6 +75,10 @@ public class Hand implements Serializable {
         }
     }
 
+    public synchronized int handSize() {
+        return this.cards.size();
+    }
+
     public synchronized List<Card> split() {
         return this.cards;
     }

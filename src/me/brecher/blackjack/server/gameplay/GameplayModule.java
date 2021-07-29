@@ -8,5 +8,6 @@ public class GameplayModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Gameplay.class).to(GameplayImpl.class).in(Singleton.class);
+        bind(ClientSync.class).in(Singleton.class);
     }
 }

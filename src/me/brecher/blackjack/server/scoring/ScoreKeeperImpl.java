@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import me.brecher.blackjack.shared.events.GuiUpdateMoneyEvent;
 import me.brecher.blackjack.shared.events.MoneyChangedEvent;
-import me.brecher.blackjack.shared.events.RoundResetEvent;
+import me.brecher.blackjack.shared.events.RoundNewRoundEvent;
 
 public class ScoreKeeperImpl implements ScoreKeeper {
 
@@ -41,7 +41,7 @@ public class ScoreKeeperImpl implements ScoreKeeper {
     }
 
     @Subscribe
-    public void roundReset(RoundResetEvent event) {
+    public void roundReset(RoundNewRoundEvent event) {
         this.asyncEventBus.post(new GuiUpdateMoneyEvent(1, this.scoreSaver.getScoreForPlayer(1)));
     }
 

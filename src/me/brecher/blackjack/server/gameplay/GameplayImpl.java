@@ -28,17 +28,23 @@ public class GameplayImpl implements Gameplay {
     @Dealer
     Player dealer;
 
+    @Inject
+    ClientSync clientSync;
+
     boolean inRound;
     boolean beginNextRound;
 
     private final AsyncEventBus asyncEventBus;
     private final ScheduledExecutorService scheduledExecutorService;
 
+    private final Server game;
+
 
     @Inject
     public GameplayImpl(AsyncEventBus asyncEventBus, Server game, ScheduledExecutorService scheduledExecutorService) {
         this.asyncEventBus = asyncEventBus;
         this.scheduledExecutorService = scheduledExecutorService;
+        this.game = game;
 
 
         this.inRound = false;
@@ -53,7 +59,8 @@ public class GameplayImpl implements Gameplay {
     void run() {
         while (!Thread.currentThread().isInterrupted()) {
 
-            asyncEventBus.post(new RoundResetEvent());
+
+            asyncEventBus.post(new RoundNewRoundEvent());
 
             synchronized (this) {
                 while (!beginNextRound) {
@@ -75,6 +82,8 @@ public class GameplayImpl implements Gameplay {
             this.deck.reset();
 
             this.asyncEventBus.post(new RoundBeganEvent());
+
+            clientSync.syncClient();
 
             player.resetHand();
             dealer.resetHand();

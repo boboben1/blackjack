@@ -3,7 +3,6 @@ package me.brecher.blackjack.server;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import me.brecher.blackjack.server.ServerToClientEventQueue;
 import me.brecher.blackjack.shared.events.*;
 
 public class ServerEventRouter {
@@ -45,7 +44,7 @@ public class ServerEventRouter {
     }
 
     @Subscribe
-    public void resetEvent(RoundResetEvent event) {
+    public void resetEvent(RoundNewRoundEvent event) {
         this.serverToClientEventQueue.sendToClient(event);
     }
 

@@ -4,6 +4,7 @@ import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import me.brecher.blackjack.client.ClientToServerEventQueue;
 import me.brecher.blackjack.shared.events.*;
 
 import javax.swing.*;
@@ -33,15 +34,17 @@ public class GameForm {
 
     private final AsyncEventBus eventBus;
     private final HandViewFactory handViewFactory;
+    private final ClientToServerEventQueue clientToServerEventQueue;
 
     private boolean loaded;
     private boolean hasError;
     private final Timer timer;
 
     @Inject
-    public GameForm(HandViewFactory handViewFactory, AsyncEventBus eventBus) {
+    public GameForm(HandViewFactory handViewFactory, AsyncEventBus eventBus, ClientToServerEventQueue clientToServerEventQueue) {
         this.handViewFactory = handViewFactory;
         this.eventBus = eventBus;
+        this.clientToServerEventQueue = clientToServerEventQueue;
         this.loaded = false;
 
         this.timer = new Timer(1000, e -> {
@@ -95,6 +98,10 @@ public class GameForm {
     @Subscribe
     public void roundBegun(RoundBeganEvent event) {
         this.statusLabel.setText("");
+        this.handView1.reset();
+        this.handView2.reset();
+
+        this.clientToServerEventQueue.sendToServer(new ClientAckEvent());
     }
 
     @Subscribe

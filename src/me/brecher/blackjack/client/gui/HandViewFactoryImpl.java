@@ -12,13 +12,17 @@ import java.lang.reflect.InvocationTargetException;
 public class HandViewFactoryImpl implements HandViewFactory {
     private final Provider<AsyncEventBus> asyncEventBusProvider;
     private final Provider<CardResourceFinder> cardResourceFinderProvider;
+    private final Provider<GuiHandManager> guiHandManagerProvider;
 
     private HandView newHandView;
 
     @Inject
-    HandViewFactoryImpl(Provider<AsyncEventBus> asyncEventBusProvider, Provider<CardResourceFinder> cardResourceFinderProvider) {
+    HandViewFactoryImpl(Provider<AsyncEventBus> asyncEventBusProvider,
+                        Provider<CardResourceFinder> cardResourceFinderProvider,
+                        Provider<GuiHandManager> guiHandManagerProvider) {
         this.asyncEventBusProvider = asyncEventBusProvider;
         this.cardResourceFinderProvider = cardResourceFinderProvider;
+        this.guiHandManagerProvider = guiHandManagerProvider;
     }
 
 
@@ -26,7 +30,12 @@ public class HandViewFactoryImpl implements HandViewFactory {
     public HandView create(int playerNumber) {
 
         try {
-            EventQueue.invokeAndWait(() -> newHandView = new HandView(playerNumber, this.cardResourceFinderProvider.get(), this.asyncEventBusProvider.get()));
+            EventQueue.invokeAndWait(() -> newHandView =
+                    new HandView(playerNumber,
+                            this.cardResourceFinderProvider.get(),
+                            this.asyncEventBusProvider.get(),
+                            this.guiHandManagerProvider.get()
+                    ));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (InvocationTargetException e) {

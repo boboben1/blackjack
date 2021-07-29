@@ -49,7 +49,9 @@ public class LocalPlayerImpl implements Player {
         {
             this.eventBus.post(new BetDoubleEvent());
 
-            addCard(deckManager.draw(true));
+            playerHand.addCard(deckManager.draw(true));
+
+            finishTurn();
         }
 
     }
@@ -89,17 +91,16 @@ public class LocalPlayerImpl implements Player {
 
                 notifyAll();
             } else {
-
-                Card card = deckManager.draw(true);
-                playerHand.activeHand().addCard(card);
-
-                if (playerHand.handValue() >= 21)
-                    finishTurn();
-
-                this.eventBus.post(new GuiSwitchEvent(1, card));
+                switchHand();
             }
 
         }
+    }
+
+    private synchronized void switchHand() {
+        addCard(deckManager.draw(true));
+
+        this.eventBus.post(new GuiSwitchEvent(1));
     }
 
     @Override

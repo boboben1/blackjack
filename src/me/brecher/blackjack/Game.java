@@ -9,6 +9,7 @@ import me.brecher.blackjack.server.Server;
 import me.brecher.blackjack.server.ServerModule;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Game {
 
@@ -22,18 +23,5 @@ public class Game {
         Client client = injector.getInstance(ClientFactory.class).create(port);
 
         client.start();
-
-//        Injector serverInjector = Guice.createInjector(new ServerModule());
-//
-//        Server server = serverInjector.getInstance(Server.class);
-//
-//
-//        int port = server.start();
-//
-//        Injector clientInjector = Guice.createInjector(new ClientModule());
-//
-//        Client client = clientInjector.getInstance(ClientFactory.class).create(port);
-//
-//        client.start();
     }
 }

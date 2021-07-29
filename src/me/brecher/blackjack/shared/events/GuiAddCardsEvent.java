@@ -11,19 +11,18 @@ public class GuiAddCardsEvent implements Serializable {
     private final List<Card> cards;
     private final int handValue;
     private final int hand;
+    private final int handSize;
 
-    public GuiAddCardsEvent(int playerID, List<Card> cards, int handValue) {
-        this.playerID = playerID;
-        this.cards = cards;
-        this.handValue = handValue;
-        this.hand = 0;
-    }
-
-    public GuiAddCardsEvent(int playerID, List<Card> cards, int handValue, int hand) {
+    public GuiAddCardsEvent(int playerID, List<Card> cards, int handValue, int handSize, int hand) {
         this.playerID = playerID;
         this.cards = cards;
         this.handValue = handValue;
         this.hand = hand;
+        this.handSize = handSize;
+    }
+
+    public int getHandSize() {
+        return handSize;
     }
 
     public int getHand() {

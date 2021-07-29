@@ -1,6 +1,7 @@
 package me.brecher.blackjack.client;
 
 import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import me.brecher.blackjack.client.gui.GameForm;

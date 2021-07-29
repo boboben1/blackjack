@@ -23,5 +23,7 @@ public class GuiModule extends AbstractModule {
 
         bind(HandViewFactory.class).to(HandViewFactoryImpl.class);
         bind(BetChangeFactory.class).to(BetChangeFactoryImpl.class);
+
+        bind(GuiHandManager.class).to(GuiHandManagerImpl.class);
     }
 }

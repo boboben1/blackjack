@@ -74,7 +74,7 @@ public class HandManagerImpl implements HandManager {
     public void addCard(Card card) {
         this.activeHand().addCard(card);
 
-        this.eventBus.post(new GuiAddCardEvent(playerID, card, this.handValue(), activeHand));
+        this.eventBus.post(new GuiAddCardEvent(playerID, card, this.handValue(), this.activeHand().handSize(), activeHand));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class HandManagerImpl implements HandManager {
         for (Card card : cards)
             this.activeHand().addCard(card);
 
-        this.eventBus.post(new GuiAddCardsEvent(playerID, cards, this.handValue(), activeHand));
+        this.eventBus.post(new GuiAddCardsEvent(playerID, cards, this.handValue(), this.activeHand().handSize(), activeHand));
     }
 
     @Override

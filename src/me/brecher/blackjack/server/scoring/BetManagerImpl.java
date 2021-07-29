@@ -82,7 +82,7 @@ public class BetManagerImpl implements BetManager {
     }
 
     @Subscribe
-    public synchronized void roundReset(RoundResetEvent event) {
+    public synchronized void roundReset(RoundNewRoundEvent event) {
 
         this.eventBus.post(new BetUpdateEvent(bet));
 
