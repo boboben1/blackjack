@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/BlackJack_jar</output-path>
     <root id="archive" name="BlackJack.jar">
       <element id="module-output" name="BlackJack" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/guice-assistedinject-5.0.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/guice-5.0.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/javax.inject-1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/aopalliance-1.0.jar" path-in-jar="/" />
@@ -13,9 +14,11 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/checker-qual-3.5.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/error_prone_annotations-2.3.4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/j2objc-annotations-1.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$KOTLIN_BUNDLED$/lib/kotlin-stdlib.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$KOTLIN_BUNDLED$/lib/kotlin-reflect.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$KOTLIN_BUNDLED$/lib/kotlin-test.jar" path-in-jar="/" />
       <element id="module-source" name="BlackJack" />
-      <element id="file-copy" path="$PROJECT_DIR$/readme.md" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/guice-assistedinject-5.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/forms_rt.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

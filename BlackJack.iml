@@ -11,5 +11,6 @@
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="com.google.inject:guice:5.0.1" level="project" />
     <orderEntry type="library" name="com.google.inject.extensions:guice-assistedinject:5.0.1" level="project" />
+    <orderEntry type="library" name="GuiDesigner" level="project" />
   </component>
 </module>

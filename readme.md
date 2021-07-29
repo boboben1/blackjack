@@ -90,9 +90,9 @@ javac -cp ".:../lib/*" me/brecher/blackjack/Game.java
 
 ```shell
 # Windows
-java -cp ".;../lib/*" me.brecher.blackjack.Game
+java -cp ".;../lib/*;../resources" me.brecher.blackjack.Game
 # Linux
-java -cp ".:../lib/*" me.brecher.blackjack.Game
+java -cp ".:../lib/*:../resources" me.brecher.blackjack.Game
 ```
 
 ## Attribution

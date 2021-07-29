@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="GuiDesigner">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/forms_rt.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

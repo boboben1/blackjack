@@ -7,4 +7,5 @@ import java.awt.*;
 public interface CardResourceFinder {
     Image getCardImage(Card card);
     boolean waitForLoaded();
+    boolean hadError();
 }

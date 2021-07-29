@@ -42,7 +42,7 @@ public class CardResourceFinderImpl implements CardResourceFinder {
             boolean hadError = false;
             try {
                 preloadResources();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 hadError = true;
             } finally {
@@ -74,7 +74,7 @@ public class CardResourceFinderImpl implements CardResourceFinder {
         return !this.errorOccurred;
     }
 
-    private void preloadResources() throws IOException {
+    private void preloadResources() throws IOException, NullPointerException {
         this.cardBack = ImageIO.read(
                 Objects.requireNonNull(getClass().getClassLoader().getResource("res/blue_back.png")));
 
@@ -99,5 +99,10 @@ public class CardResourceFinderImpl implements CardResourceFinder {
             return cardImages.get(card);
 
         return cardBack;
+    }
+
+    @Override
+    public synchronized boolean hadError() {
+        return errorOccurred;
     }
 }
